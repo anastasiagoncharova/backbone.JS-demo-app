@@ -1,0 +1,3 @@
+[submodule "lib/n13"]
+	path = lib/n13
+	url = https://github.com/tmptrash/N13.git
