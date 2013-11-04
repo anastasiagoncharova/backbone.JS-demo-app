@@ -1,0 +1,13 @@
+.playlist-grid {
+    width           : 100%;
+    padding         : 15px;
+    color           : #FFF;
+    font-family     : monospace;
+    background-color: #444;
+}
+.playlist-grid tr {
+    cursor          : pointer;
+}
+.playlist-grid tr.selected {
+    background-color: #777;
+}

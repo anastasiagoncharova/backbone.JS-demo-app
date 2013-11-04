@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Audio player</title>
+
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+        <link rel="stylesheet" type="text/css" href="css/controlpanel.css"/>
+        <link rel="stylesheet" type="text/css" href="css/playlist.css"/>
+        <link rel="stylesheet" type="text/css" href="css/playlistcontainer.css"/>
+        <link rel="stylesheet" type="text/css" href="css/player.css"/>
+
+        <script type="text/javascript" src="lib/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="lib/underscore.js"></script>
+        <script type="text/javascript" src="lib/backbone.js"></script>
+        <script type="text/javascript" src="lib/n13.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            N13.init({appRoot: ['App', 'js']});
+            N13.create('App.Application');
+        </script>
+        <!-- Container for main (viewport) view -->
+        <div class="main-container"></div>
+    </body>
+</html>
