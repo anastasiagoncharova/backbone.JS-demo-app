@@ -153,7 +153,7 @@ N13.define('App.view.base.View', {
      * Calls before render process will begin. Can be used for preparing of user data.
      * It instantiates all nested views.
      * @param {Element} el Root DOM element of the current view
-     * @returns {udef|Boolean} false means, that rendering will be stopped, all other values will approve rendering.
+     * @returns {undefined|Boolean} false means, that rendering will be stopped, all other values will approve rendering.
      */
     onBeforeRender: N13.emptyFn,
 
@@ -168,7 +168,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before destroy process will begin. Can be used for destroying of nested objects or nested non standard views.
-     * @returns {udef|Boolean} false means, that destroying will be stopped, all other values will approve destroy.
+     * @returns {undefined|Boolean} false means, that destroying will be stopped, all other values will approve destroy.
      */
     onBeforeDestroy: N13.emptyFn,
 
@@ -181,7 +181,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before clear (DOM remove) process will begin. Can be used for clearing of nested DOM nodes.
-     * @returns {udef|Boolean} false means, that clear will be stopped, all other values will approve clear.
+     * @returns {undefined|Boolean} false means, that clear will be stopped, all other values will approve clear.
      */
     onBeforeClear: N13.emptyFn,
 
@@ -194,7 +194,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before show method will be called. Can be used for special preparation before view will be shown.
-     * @returns {udef|Boolean} false means, that showing will be stopped, all other values will approve show.
+     * @returns {undefined|Boolean} false means, that showing will be stopped, all other values will approve show.
      */
     onBeforeShow: N13.emptyFn,
 
@@ -207,7 +207,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before hide() method will be called. Can be used for special preparation before view will be hidden.
-     * @returns {udef|Boolean} false means, that hiding will be stopped, all other values will approve hide.
+     * @returns {undefined|Boolean} false means, that hiding will be stopped, all other values will approve hide.
      */
     onBeforeHide: N13.emptyFn,
 
@@ -220,7 +220,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before disable() method will be called.
-     * @returns {udef|Boolean} false means, that disabling will be stopped, all other values will approve disable.
+     * @returns {undefined|Boolean} false means, that disabling will be stopped, all other values will approve disable.
      */
     onBeforeDisable: N13.emptyFn,
 
@@ -233,7 +233,7 @@ N13.define('App.view.base.View', {
     /**
      * @interface
      * Calls before enable() method will be called.
-     * @returns {udef|Boolean} false means, that enabling will be stopped, all other values will approve disable.
+     * @returns {undefined|Boolean} false means, that enabling will be stopped, all other values will approve disable.
      */
     onBeforeEnable: N13.emptyFn,
 
@@ -246,14 +246,14 @@ N13.define('App.view.base.View', {
     /**
      * Calls every time, then item is disabled. If this method returns true, then default disable handler will be skipped
      * @param {Element} el
-     * @returns {udef|Boolean}
+     * @returns {undefined|Boolean}
      */
     onItemDisable: N13.emptyFn,
 
     /**
      * Calls every time, then item is enabled. If this method returns true, then default enable handler will be skipped
      * @param {Element} el
-     * @returns {udef|Boolean}
+     * @returns {undefined|Boolean}
      */
     onItemEnable: N13.emptyFn,
 
@@ -394,7 +394,7 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforerender', this);
         approved = this.onBeforeRender(this.el);
-        if (approved === udef || approved === true) {
+        if (approved === undefined || approved === true) {
             this.callParent(arguments);
             this.clear();
             if (this._tpl === '' || !N13.isString(this._tpl) || !N13.isObject(this._templateData) && this._templateData !== null) {
@@ -430,7 +430,7 @@ N13.define('App.view.base.View', {
 
             this.trigger('beforeclear');
             approved = this.onBeforeClear();
-            if (approved === udef || approved === true) {
+            if (approved === undefined || approved === true) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
                         //
@@ -464,7 +464,7 @@ N13.define('App.view.base.View', {
 
             this.trigger('beforeshow');
             approved = this.onBeforeShow();
-            if (approved === udef || approved === true) {
+            if (approved === undefined || approved === true) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
                         items[i].show();
@@ -490,7 +490,7 @@ N13.define('App.view.base.View', {
 
             this.trigger('beforehide');
             approved = this.onBeforeHide();
-            if (approved === udef || approved === true) {
+            if (approved === undefined || approved === true) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
                         items[i].hide();
@@ -517,7 +517,7 @@ N13.define('App.view.base.View', {
 
             this.trigger('beforedisable');
             approved = this.onBeforeDisable(cssPaths);
-            if ((approved === udef || approved === true)) {
+            if ((approved === undefined || approved === true)) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
                         items[i].disable();
@@ -542,7 +542,7 @@ N13.define('App.view.base.View', {
 
             this.trigger('beforeenable');
             approved = this.onBeforeEnable(cssPaths);
-            if ((approved === udef || approved === true)) {
+            if ((approved === undefined || approved === true)) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
                         items[i].enable();
@@ -567,7 +567,7 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforedestroy', this);
         approved = this.onBeforeDestroy();
-        if (approved === udef || approved === true) {
+        if (approved === undefined || approved === true) {
             //
             // If this view have used listenTo() calls, then stopListening() will remove
             // all handlers. off() will remove all handlers binded by on() method.
@@ -668,9 +668,9 @@ N13.define('App.view.base.View', {
                 // If nested view has auto generated value for id, we need to take current tag with class='innerContainer'
                 // and set auto generated id to it. After that, we need to pass this new id to nested view.
                 //
-                innerId = (item.elPath === autoIdName ? id() : udef);
+                innerId = (item.elPath === autoIdName ? id() : undefined);
                 $(containers[i]).attr('id', innerId);
-                item.render(innerId ? '#' + innerId : udef);
+                item.render(innerId ? '#' + innerId : undefined);
             }
         }
     },

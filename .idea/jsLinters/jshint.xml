@@ -63,7 +63,7 @@
     <option passfail="false" />
     <option white="false" />
     <option maxerr="50" />
-    <option predef="$, jQuery, Backbone, _, N13, udef, App, requirejs, TestCase, AsyncTestCase, assertEquals, assertTrue, assertFalse, assertObject, assertException, assertNoException, Backgrid, JsHamcrest, JsMockito, prompt" />
+    <option predef="$, jQuery, Backbone, _, N13, udef, App, requirejs, TestCase, AsyncTestCase, assertEquals, assertTrue, assertFalse, assertObject, assertException, assertNoException, Backgrid, JsHamcrest, JsMockito, prompt, console" />
   </component>
 </project>
 
