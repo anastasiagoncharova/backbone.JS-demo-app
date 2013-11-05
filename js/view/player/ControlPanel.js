@@ -44,7 +44,7 @@ N13.define('App.view.player.ControlPanel', {
         //
         // We should update event handler every time after rendering. Unbinding will be called in destroy() method.
         //
-        this._clean();
+        this._unbind();
         this._audioEl.on('ended', function () {me._onPlayEnd();});
     },
 
@@ -53,7 +53,7 @@ N13.define('App.view.player.ControlPanel', {
      * should unbind all event handlers from custom elements.
      */
     onAfterDestroy: function () {
-        this._clean();
+        this._unbind();
         this.callParent();
     },
 
@@ -88,7 +88,7 @@ N13.define('App.view.player.ControlPanel', {
      * Unbinds all event handlers
      * @private
      */
-    _clean: function () {
+    _unbind: function () {
         if (this._audioEl) {
             this._audioEl.off();
         }
