@@ -8,3 +8,4 @@
 - Think about many mixins, which will be contain parts from base.View class
 - Add base collection. It should solve model dependency issue and, maybe parmeters issue (see OmniRetail base collection)
 - Add nested controller for PlaylistContainer
+- Fix cache property

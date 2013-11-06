@@ -718,7 +718,7 @@ N13.define('App.view.base.View', {
      * @private
      */
     _createItems: function () {
-        var items     = this.items;
+        var items     = N13.isString(this.items) ? [this.items] : this.items;
         var ns        = N13.ns;
         var isString  = N13.isString;
         var isObject  = N13.isObject;
