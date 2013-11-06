@@ -516,7 +516,7 @@ N13.define('App.view.base.View', {
             var len;
 
             this.trigger('beforedisable');
-            approved = this.onBeforeDisable(cssPaths);
+            approved = this.onBeforeDisable();
             if ((approved === undefined || approved === true)) {
                 if (N13.isArray(items)) {
                     for (i = 0, len = items.length; i < len; i++) {
@@ -524,7 +524,7 @@ N13.define('App.view.base.View', {
                     }
                 }
 
-                this.onAfterDisable(cssPaths);
+                this.onAfterDisable();
                 this.trigger('disable');
             }
         }

@@ -119,7 +119,7 @@ N13.define('App.view.player.PlaylistGrid', {
             this._curRowEl.removeClass('selected');
         }
         this._curRowEl = $(e.currentTarget);
-        if (e.target.nodeName == 'TD') {
+        if (e.target.nodeName.toUpperCase() === 'TD') {
             col = +$(e.target).attr('col');
             this._curRow = +this._curRowEl.attr('row');
 
