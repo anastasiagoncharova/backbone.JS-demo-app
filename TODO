@@ -1,0 +1,10 @@
+
+  TODO list file
+
+- Add Destructor mixin. It should add an interface for destroying of any class
+- Write about auto unbind from events
+- Think about auto unbind from any object in class instance. We should check, if this class an instance of Observer mixin
+- Add unit tests for all base classes
+- Think about many mixins, which will be contain parts from base.View class
+- Add base collection. It should solve model dependency issue and, maybe parmeters issue (see OmniRetail base collection)
+- Add nested controller for PlaylistContainer

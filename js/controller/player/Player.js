@@ -39,7 +39,7 @@ N13.define('App.controller.player.Player', {
          */
         this._playlistGrid = null;
         /**
-         * {null|Number} Last selected row index
+         * {null|Number} Last selected row index or null if no selection
          * @private
          */
         this._curRow       = null;
@@ -50,21 +50,20 @@ N13.define('App.controller.player.Player', {
      * It also binds all handlers to the events.
      */
     run: function () {
-        var view      = this.findView('player.Container');
-        var addButton = this.findView('player.Container > player.PlaylistContainer > Button');
-
-        this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid');
-        this._controlPanel = this.findView('player.Container > player.ControlPanel');
+        var view         = this.findView('player.Container');
+        var addButton    = this.findView('player.Container > player.PlaylistContainer > Button');
+        var playlistGrid = this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid');
+        var controlPanel = this._controlPanel = this.findView('player.Container > player.ControlPanel');
 
         addButton.on('click', this._onAddTrackClick, this);
-        this._controlPanel.on('played', this._onTrackPlayed, this);
-        this._playlistGrid.on('selected', this._onTrackSelect, this);
+        controlPanel.on('played', this._onTrackPlayed, this);
+        playlistGrid.on('selected', this._onTrackSelect, this);
 
         //
         // We need to set tracks collection to the playlist grid and render
         // main container after that. So, tracks collection will be used in rendering.
         //
-        this._playlistGrid.setTracks(this._tracks);
+        playlistGrid.setTracks(this._tracks);
         view.render();
     },
 
