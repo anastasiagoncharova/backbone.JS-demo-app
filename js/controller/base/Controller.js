@@ -14,7 +14,10 @@
  * @author DeadbraiN
  */
 N13.define('App.controller.base.Controller', {
-    mixins : {iface: 'App.mixin.Interface'},
+    mixins : {
+        iface  : 'App.mixin.Interface',
+        observe: 'App.mixin.Observer'
+    },
     configs: {
         /**
          * {String|Object|Backbone.View} The name of the view or configuration object, which will be controlled
@@ -130,6 +133,7 @@ N13.define('App.controller.base.Controller', {
     stop: function () {
         if (this._active) {
             this.onBeforeStop();
+            this.callMixin('observe', 'destroy');
             if (!this.noView && this.view instanceof Backbone.View) {
                 this.view.destroy();
                 delete this.view;

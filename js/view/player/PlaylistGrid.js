@@ -61,23 +61,14 @@ N13.define('App.view.player.PlaylistGrid', {
     onAfterRender: function () {
         var me = this;
 
-        this._unbind();
-        this.el.find('tr').on('click', function () {me._onRowClick.apply(me, arguments);});
+        this.listen(this.el.find('tr'), 'click', function () {me._onRowClick.apply(me, arguments);});
         if (this.tracks) {
-            this.tracks.on('add',    function () {me.render();});
-            this.tracks.on('remove', function () {me.render();});
+            this.listen(this.tracks, 'add',    function () {me.render();});
+            this.listen(this.tracks, 'remove', function () {me.render();});
         }
         this.select(this._curRow);
 
         this.callParent();
-    },
-
-    /**
-     * Calls before destroy() call
-     */
-    onBeforeDestroy: function () {
-        this.callParent();
-        this._unbind();
     },
 
     /**
@@ -96,16 +87,6 @@ N13.define('App.view.player.PlaylistGrid', {
         this.tracks = tracks;
     },
 
-    /**
-     * Unbinds from all events
-     * @private
-     */
-    _unbind: function () {
-        this.el.find('tr').off();
-        if (this.tracks) {
-            this.tracks.off();
-        }
-    },
 
     /**
      * Table row click event handler. Adds selection css style to the clicked row

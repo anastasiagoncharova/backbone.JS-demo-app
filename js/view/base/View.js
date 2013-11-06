@@ -118,7 +118,7 @@ N13.define('App.view.base.View', {
         /**
          * {Object} Listener object. See Observer mixin for details.
          */
-        listen          : {}
+        listeners       : {}
     },
     statics : {
         /**
@@ -441,6 +441,7 @@ N13.define('App.view.base.View', {
                 }
 
                 if (this.el) {
+                    this.el.off();
                     children = this.el.children();
                     children.off();
                     children.remove();
@@ -568,12 +569,7 @@ N13.define('App.view.base.View', {
         this.trigger('beforedestroy', this);
         approved = this.onBeforeDestroy();
         if (approved === undefined || approved === true) {
-            //
-            // If this view have used listenTo() calls, then stopListening() will remove
-            // all handlers. off() will remove all handlers binded by on() method.
-            //
-            this.stopListening();
-            this.off();
+            this.callMixin('observe');
             //
             // We should clear the DOM before we clears the instances
             //
