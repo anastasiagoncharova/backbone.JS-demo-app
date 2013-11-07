@@ -16,7 +16,8 @@
 N13.define('App.controller.base.Controller', {
     mixins : {
         iface  : 'App.mixin.Interface',
-        observe: 'App.mixin.Observer'
+        observe: 'App.mixin.Observer',
+        create : 'App.mixin.Creator'
     },
     configs: {
         /**
@@ -24,12 +25,22 @@ N13.define('App.controller.base.Controller', {
          * by this controller. e.g.: 'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}
          * Controller listens specified events from view and calls bind handlers.
          */
-        view       : null,
+        view        : null,
         /**
          * {String} Prefix namespace of the view, according to the view folder. For example: 'App.view'. Should
          * be set without dot at the end.
          */
-        viewNs     : 'App.view',
+        viewNs      : 'App.view',
+        /**
+         * {String} Prefix namespace for all controllers. This prefix + alias will produce full namespace for specified
+         * class. For example: controllerNs + '.' + 'module.MyController' -> 'App.controller.module.MyController'.
+         */
+        controllerNs: 'App.controller',
+        /**
+         * {Array} This parameter means an array of classes we should create in constructor. No classes by default.
+         * It's used in App.mixin.Creator mixin. See it for details.
+         */
+        create      : [],
         /**
          * TODO:
          * TODO: i should rework this. parsing should be here, but not in the router class
@@ -38,11 +49,11 @@ N13.define('App.controller.base.Controller', {
          * URL hash. For example: '#libraryNavigator/key/123/id34' with matcher string '/*location/id:facilityId' will
          * be parsed into the ['/key/123', '34']
          */
-        paramRe    : null,
+        paramRe     : null,
         /**
          * {Boolean} true to skip rendering the view (but it can contain tree reference), false - otherwise
          */
-        noView     : false
+        noView      : false
     },
 
 
@@ -67,6 +78,13 @@ N13.define('App.controller.base.Controller', {
 
     /**
      * @interface
+     * Calls after class instantiation. Can be used for post initializing.
+     * Also see onBeforeInit() method.
+     */
+    onAfterInit: N13.emptyFn,
+
+    /**
+     * @interface
      * Calls before controller stops. Can be used for saving data ar last chance actions
      */
     onBeforeStop: N13.emptyFn,
@@ -88,7 +106,7 @@ N13.define('App.controller.base.Controller', {
          * {Boolean} will be true after run() method will be run.
          * @private
          */
-        this._active = false;
+        this._running = false;
     },
 
     /**
@@ -98,48 +116,45 @@ N13.define('App.controller.base.Controller', {
         this.callMixin('iface');
         this.onBeforeInit();
         this._createView();
+        this.callMixin('create');
         this.onAfterInit();
-    },
-
-    /**
-     * Calls after class instantiation. Can be used for post initializing.
-     * Also see onBeforeInit() method.
-     */
-    onAfterInit: function () {
-        this.callParent(arguments);
     },
 
     /**
      * This method will be called when controller is ready to do main job - create views, models and collections
      */
     run: function () {
-        if (!this._active) {
-            this.onBeforeRun();
-
-//            if (!this.noView && this.view instanceof Backbone.View) {
-//                if (this.view.autoRender && !this.view.rendered) {
-//                    this.view.render();
-//                }
-//            }
-
-            this.onAfterRun();
-            this._active = true;
+        if (!this._running) {
+            if (this.onBeforeRun() !== false) {
+                this._running = true;
+                this.onAfterRun();
+            }
         }
     },
 
     /**
-     * Calls before controller wil die. Can be used as a destructor. Removes the view.
+     * Calls before controller will stop. All event handler will be unbind here automatically
      */
     stop: function () {
-        if (this._active) {
-            this.onBeforeStop();
-            this.callMixin('observe', 'destroy');
+        if (this._running) {
+            if (this.onBeforeStop() !== false) {
+                this.callMixin('observe');
+                this._running = false;
+                this.onAfterStop();
+            }
+        }
+    },
+
+    /**
+     * Destroys a controller. Can be used as a destructor. Removes the view.
+     */
+    destroy: function () {
+        if (this.onBeforeDestroy() !== false) {
+            this.callMixin('create');
             if (!this.noView && this.view instanceof Backbone.View) {
                 this.view.destroy();
                 delete this.view;
             }
-            this._active = false;
-            this.onAfterStop();
         }
     },
 

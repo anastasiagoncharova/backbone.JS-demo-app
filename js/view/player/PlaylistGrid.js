@@ -111,8 +111,6 @@ N13.define('App.view.player.PlaylistGrid', {
                 this._curRowEl = null;
                 this.tracks.remove(this.tracks.at(this._curRow));
             }
-        } else {
-            this._curRowEl.addClass('selected');
         }
     }
 });

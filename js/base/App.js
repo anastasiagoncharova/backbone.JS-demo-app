@@ -7,7 +7,14 @@
  * @author DeadbraiN
  */
 N13.define('App.base.App', {
-    mixins: {iface: 'App.mixin.Interface'},
+    mixins : {iface: 'App.mixin.Interface'},
+
+    /**
+     * @interface
+     * This is where an application starts and our html document is loaded and ready. You should
+     * override this method in your child class.
+     */
+    run: N13.emptyFn,
 
     /**
      * @constructor
@@ -23,12 +30,5 @@ N13.define('App.base.App', {
         $(document).ready(function () {
             me.run();
         });
-    },
-
-    /**
-     * @interface
-     * This is where an application starts and our html document is loaded and ready. You should
-     * override this method in your child class.
-     */
-    run: N13.emptyFn
+    }
 });
