@@ -53,7 +53,11 @@ N13.define('App.controller.base.Controller', {
         /**
          * {Boolean} true to skip rendering the view (but it can contain tree reference), false - otherwise
          */
-        noView      : false
+        noView      : false,
+        /**
+         * {Boolean} true if we want to run current controller in the constructor
+         */
+        autoRun     : false
     },
 
 
@@ -117,6 +121,9 @@ N13.define('App.controller.base.Controller', {
         this.onBeforeInit();
         this._createView();
         this.callMixin('create');
+        if (this.autoRun) {
+            this.run();
+        }
         this.onAfterInit();
     },
 
@@ -127,6 +134,7 @@ N13.define('App.controller.base.Controller', {
         if (!this._running) {
             if (this.onBeforeRun() !== false) {
                 this._running = true;
+                this._runSubControllers();
                 this.onAfterRun();
             }
         }
@@ -246,6 +254,24 @@ N13.define('App.controller.base.Controller', {
 
         if (View) {
             this.view = new View(cfg);
+        }
+    },
+
+    /**
+     * Runs all sub controllers if exist. Sub controllers should be created by create
+     * configuration and App.mixin.Creator mixin
+     * @private
+     */
+    _runSubControllers: function () {
+        var i          = 1;
+        var ctrl       = this.getClass(0);
+        var isFunction = N13.isFunction;
+
+        while(ctrl) {
+            if (ctrl instanceof App.controller.base.Controller && isFunction(ctrl.run)) {
+                ctrl.run();
+            }
+            ctrl = this.getClass(i++);
         }
     }
 });
