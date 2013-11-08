@@ -2,7 +2,7 @@
  * Controls audio player module generally. It tracks adding, removing and selecting tracks.
  * Main idea here, is to track all nested views also. It should create and render main view
  * and all nested views also. It also should bind all handlers to appropriate views, models
- * and collections events.
+ * and collections events. It also uses one nested controller - player.Playlist.
  *
  * @author DeadbraiN
  */
@@ -10,8 +10,15 @@ N13.define('App.controller.player.Player', {
     extend  : 'App.controller.base.Controller',
     requires: [
         'App.collection.player.Track',
-        'App.Config'
+        'App.Config',
+        'App.controller.player.Playlist'
     ],
+    configs : {
+        /**
+         * {Array} Array of nested controllers
+         */
+        controllers: ['player.Playlist']
+    },
 
     /**
      * Here we should create all private fields of this class.
@@ -46,37 +53,28 @@ N13.define('App.controller.player.Player', {
     },
 
     /**
-     * Entry point of the controller. It runs the controller and renders the main and all nested views.
-     * It also binds all handlers to the events.
+     * This is how we can set a lazy configuration for nested controller
      */
-    run: function () {
-        var view         = this.findView('player.Container');
-        var addButton    = this.findView('player.Container > player.PlaylistContainer > Button');
-        var playlistGrid = this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid');
-        var controlPanel = this._controlPanel = this.findView('player.Container > player.ControlPanel');
+    onAfterInit: function () {
+        this.findController('App.controller.player.Playlist').setConfig({
+            tracks: this._tracks,
+            view  : this.findView('player.Container > player.PlaylistContainer')
+        });
+    },
 
-        addButton.on('click', this._onAddTrackClick, this);
-        controlPanel.on('played', this._onTrackPlayed, this);
-        playlistGrid.on('selected', this._onTrackSelect, this);
+    /**
+     * After binding in onBeforeRun() method and after creation of all nested controllers we should render main view
+     */
+    onAfterRun: function () {
+        (this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
+        (this._controlPanel = this.findView('player.Container > player.ControlPanel')).on('played', this._onTrackPlayed, this);
 
         //
         // We need to set tracks collection to the playlist grid and render
         // main container after that. So, tracks collection will be used in rendering.
         //
-        playlistGrid.setTracks(this._tracks);
-        view.render();
-    },
-
-    /**
-     * Add track button click handler. Shows input window, gets user url and
-     * adds new track to the collection. So, the playlist will be updated automatically..
-     * @private
-     */
-    _onAddTrackClick: function () {
-        var url = prompt('Please input a track URL:');
-        if (N13.isString(url) && url !== '') {
-            this._tracks.add({url: url});
-        }
+        this._playlistGrid.setTracks(this._tracks);
+        this.findView('player.Container').render();
     },
 
     /**

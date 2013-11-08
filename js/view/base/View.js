@@ -363,7 +363,7 @@ N13.define('App.view.base.View', {
      * @override
      * Renders current view and all nested views. You can prevent rendering in child class, if onBeforeRender()
      * method will return false.
-     * @param {String} containerQuery CSS Query of the DOM tag, which contains current view.
+     * @param {String=} containerQuery CSS Query of the DOM tag, which contains current view.
      * @returns {Boolean|Object} true if view was rendered, this - otherwise
      */
     render: function (containerQuery) {

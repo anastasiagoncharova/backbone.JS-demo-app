@@ -16,8 +16,7 @@
 N13.define('App.controller.base.Controller', {
     mixins : {
         iface  : 'App.mixin.Interface',
-        observe: 'App.mixin.Observer',
-        create : 'App.mixin.Creator'
+        observe: 'App.mixin.Observer'
     },
     configs: {
         /**
@@ -37,10 +36,9 @@ N13.define('App.controller.base.Controller', {
          */
         controllerNs: 'App.controller',
         /**
-         * {Array} This parameter means an array of classes we should create in constructor. No classes by default.
-         * It's used in App.mixin.Creator mixin. See it for details.
+         * {Array|String} Nested controllers aliases or configurations. e.g.: ['Controller'] or [{cl: 'Controller', cfg: 123}] or 'Controller'
          */
-        create      : [],
+        controllers : [],
         /**
          * TODO:
          * TODO: i should rework this. parsing should be here, but not in the router class
@@ -120,7 +118,7 @@ N13.define('App.controller.base.Controller', {
         this.callMixin('iface');
         this.onBeforeInit();
         this._createView();
-        this.callMixin('create');
+        this._createControllers();
         if (this.autoRun) {
             this.run();
         }
@@ -134,7 +132,7 @@ N13.define('App.controller.base.Controller', {
         if (!this._running) {
             if (this.onBeforeRun() !== false) {
                 this._running = true;
-                this._runSubControllers();
+                this._runControllers();
                 this.onAfterRun();
             }
         }
@@ -158,7 +156,6 @@ N13.define('App.controller.base.Controller', {
      */
     destroy: function () {
         if (this.onBeforeDestroy() !== false) {
-            this.callMixin('create');
             if (!this.noView && this.view instanceof Backbone.View) {
                 this.view.destroy();
                 delete this.view;
@@ -194,6 +191,21 @@ N13.define('App.controller.base.Controller', {
     findView: function (query) {
         if (this.view && N13.isString(query) && query !== '') {
             return this._findView(query.split('>'), [this.view]);
+        }
+
+        return null;
+    },
+
+    /**
+     * Returns controller instance or null if not found by index or class name
+     * @param {String|Number} id Class name or index
+     * @return {Object} an instance or null
+     */
+    findController: function (id) {
+        if (N13.isString(id)) {
+            return _.find(this.controllers, function (v) {return v.className === id;}) || null;
+        } else if (_.isNumber(id)) {
+            return this.controllers[id];
         }
 
         return null;
@@ -258,20 +270,46 @@ N13.define('App.controller.base.Controller', {
     },
 
     /**
-     * Runs all sub controllers if exist. Sub controllers should be created by create
-     * configuration and App.mixin.Creator mixin
+     * Creates sub controllers instances from it's configurations or class names. This method
+     * uses controllers configuration parameter to do this.
      * @private
      */
-    _runSubControllers: function () {
-        var i          = 1;
-        var ctrl       = this.getClass(0);
-        var isFunction = N13.isFunction;
+    _createControllers: function () {
+        var i;
+        var len;
+        var ctrl;
+        var isObject    = N13.isObject;
+        var isString    = N13.isString;
+        var ns          = N13.ns;
+        var controllers = isString(this.controllers) ? [this.controllers] : this.controllers;
+        var instances   = [];
+        var ctrlNs      = this.controllerNs;
 
-        while(ctrl) {
-            if (ctrl instanceof App.controller.base.Controller && isFunction(ctrl.run)) {
-                ctrl.run();
+        for (i = 0, len = controllers.length; i < len; i++) {
+            ctrl = controllers[i];
+
+            if (isString(ctrl)) {
+                instances.push(new (ns(ctrlNs + '.' + ctrl, false))());
+            } else if (isObject(ctrl)) {
+                instances.push(new (ns(ctrlNs + '.' + ctrl.cl, false))(ctrl));
+            } else {
+                this.trigger('debug', 'Invalid nested controller "' + ctrl + '" of controller "' + this.className + '". This controller will be skipped.');
             }
-            ctrl = this.getClass(i++);
+        }
+        this.controllers = instances;
+    },
+
+    /**
+     * Runs all sub controllers if exist.
+     * @private
+     */
+    _runControllers: function () {
+        var i;
+        var len;
+        var controllers = this.controllers;
+
+        for (i = 0, len = controllers.length; i < len; i++) {
+            controllers[i].run();
         }
     }
 });
