@@ -51,7 +51,7 @@ N13.define('App.view.player.PlaylistGrid', {
             return;
         }
 
-        this.setData({tracks: this.tracks.toJSON()});
+        this.setConfig({data: {tracks: this.tracks.toJSON()}});
     },
 
     /**

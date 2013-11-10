@@ -28,7 +28,7 @@ N13.define('App.view.Button', {
      */
     onBeforeRender: function () {
         this.callParent();
-        this.setData({title: this.title});
+        this.setConfig({data: {title: this.title}});
     },
 
     /**

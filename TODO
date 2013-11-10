@@ -4,8 +4,10 @@
 - Write about auto unbind from events
 - Think about auto unbind from any object in class instance. We should check, if this class an instance of Observer mixin
 - Add unit tests for all base classes
-- Think about many mixins, which will be contain parts from base.View class
+- Think about many mixins, which will be contain parts from base.Controller class
 - Add base collection. It should solve model dependency issue and, maybe parameters issue (see OmniRetail base collection)
 - Add nested controller for PlaylistContainer
 - Fix cache property
 - Add difference between business events and DOM events
+- findView() query argument is very long. I should think about decrease of it. For example, it should try to find specified
+  view by alias in nested views too.

@@ -64,33 +64,28 @@ N13.define('App.controller.base.Controller', {
      * Calls before run() method. Is used for initialization and data preparing.
      */
     onBeforeRun: N13.emptyFn,
-
     /**
      * @interface
      * Calls after run() method. Is used for post initialization.
      */
     onAfterRun: N13.emptyFn,
-
     /**
      * @interface
      * Calls before class instantiation. Can be used for pre initialization or data set. You can set an items here
-     * with setItems() method.
+     * with setConfig({items: [...]}) method.
      */
     onBeforeInit: N13.emptyFn,
-
     /**
      * @interface
      * Calls after class instantiation. Can be used for post initializing.
      * Also see onBeforeInit() method.
      */
     onAfterInit: N13.emptyFn,
-
     /**
      * @interface
      * Calls before controller stops. Can be used for saving data ar last chance actions
      */
     onBeforeStop: N13.emptyFn,
-
     /**
      * @interface
      * Calls after controller stops.
@@ -102,8 +97,6 @@ N13.define('App.controller.base.Controller', {
      * Initializes and creates private fields
      */
     initPrivates: function () {
-        this.callMixin('iface');
-
         /**
          * {Boolean} will be true after run() method will be run.
          * @private
@@ -129,12 +122,14 @@ N13.define('App.controller.base.Controller', {
      * This method will be called when controller is ready to do main job - create views, models and collections
      */
     run: function () {
-        if (!this._running) {
-            if (this.onBeforeRun() !== false) {
-                this._running = true;
-                this._runControllers();
-                this.onAfterRun();
-            }
+        if (this._running) {
+            return;
+        }
+
+        if (this.onBeforeRun() !== false) {
+            this._running = true;
+            this._runControllers();
+            this.onAfterRun();
         }
     },
 
@@ -142,24 +137,26 @@ N13.define('App.controller.base.Controller', {
      * Calls before controller will stop. All event handler will be unbind here automatically
      */
     stop: function () {
-        if (this._running) {
-            if (this.onBeforeStop() !== false) {
-                this.callMixin('observe');
-                this._running = false;
-                this.onAfterStop();
-            }
+        if (!this._running || this.onBeforeStop() === false) {
+            return;
         }
+
+        this.callMixin('observe');
+        this._running = false;
+        this.onAfterStop();
     },
 
     /**
      * Destroys a controller. Can be used as a destructor. Removes the view.
      */
     destroy: function () {
-        if (this.onBeforeDestroy() !== false) {
-            if (!this.noView && this.view instanceof Backbone.View) {
-                this.view.destroy();
-                delete this.view;
-            }
+        if (this.onBeforeDestroy() === false) {
+            return;
+        }
+
+        if (!this.noView && this.view instanceof Backbone.View) {
+            this.view.destroy();
+            delete this.view;
         }
     },
 

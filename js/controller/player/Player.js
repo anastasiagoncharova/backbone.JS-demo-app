@@ -1,8 +1,8 @@
 /**
- * Controls audio player module generally. It tracks adding, removing and selecting tracks.
+ * Controls audio player module generally. It tracks playing and selecting tracks.
  * Main idea here, is to track all nested views also. It should create and render main view
- * and all nested views also. It also should bind all handlers to appropriate views, models
- * and collections events. It also uses one nested controller - player.Playlist.
+ * and all nested views. It also should bind all handlers to appropriate views, models
+ * and collections events. It uses one nested controller - player.Playlist.
  *
  * @author DeadbraiN
  */
@@ -22,7 +22,7 @@ N13.define('App.controller.player.Player', {
 
     /**
      * Here we should create all private fields of this class.
-     * Undefined fields should be set to null.
+     * Undefined fields should be set to null (not undefined).
      */
     initPrivates: function () {
         this.callParent();
@@ -53,7 +53,9 @@ N13.define('App.controller.player.Player', {
     },
 
     /**
-     * This is how we can set a lazy configuration for nested controller
+     * This is how we can set a lazy configuration for nested controller. It should
+     * know about tracks collection nd it's main view. So tracks collection shares
+     * between these two controllers, but the owner is Player (parent controller).
      */
     onAfterInit: function () {
         this.findController('App.controller.player.Playlist').setConfig({
@@ -63,7 +65,8 @@ N13.define('App.controller.player.Player', {
     },
 
     /**
-     * After binding in onBeforeRun() method and after creation of all nested controllers we should render main view
+     * After binding all event handlers and after creation of all nested
+     * controllers we should render main view
      */
     onAfterRun: function () {
         (this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
