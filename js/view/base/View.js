@@ -122,12 +122,6 @@ N13.define('App.view.base.View', {
         _currentId: 0
     },
 
-    /**
-     * @const
-     * {Array} Available view keys
-     */
-    KEYS: ['itemId', 'id', 'elPath'],
-
 
     /**
      * @interface
@@ -186,7 +180,7 @@ N13.define('App.view.base.View', {
     beforeInit: function () {
         /**
          * @config
-         * {Object} This configuration parameter should exist in every view class. Later, you may
+         * {Object|null} This configuration parameter should exist in every view class. Later, you may
          * set it by setConfig({data: {...}}) method. We need set it to null, because it will not
          * be possible to set it with setConfig() method if its undefined.
          */

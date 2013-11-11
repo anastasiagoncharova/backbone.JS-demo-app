@@ -50,6 +50,7 @@ N13.define('App.controller.base.Controller', {
         paramRe     : null,
         /**
          * {Boolean} true to skip rendering the view (but it can contain tree reference), false - otherwise
+         * TODO:
          */
         noView      : false,
         /**
@@ -91,6 +92,16 @@ N13.define('App.controller.base.Controller', {
      * Calls after controller stops.
      */
     onAfterStop: N13.emptyFn,
+    /**
+     * @interface
+     * Calls before controller stops. Can be used for saving data ar last chance actions
+     */
+    onBeforeDestroy: N13.emptyFn,
+    /**
+     * @interface
+     * Calls after controller stops.
+     */
+    onAfterDestroy: N13.emptyFn,
 
 
     /**
@@ -122,15 +133,13 @@ N13.define('App.controller.base.Controller', {
      * This method will be called when controller is ready to do main job - create views, models and collections
      */
     run: function () {
-        if (this._running) {
+        if (this._running || this.onBeforeRun() === false) {
             return;
         }
 
-        if (this.onBeforeRun() !== false) {
-            this._running = true;
-            this._runControllers();
-            this.onAfterRun();
-        }
+        this._running = true;
+        this._runControllers();
+        this.onAfterRun();
     },
 
     /**
@@ -150,20 +159,19 @@ N13.define('App.controller.base.Controller', {
      * Destroys a controller. Can be used as a destructor. Removes the view.
      */
     destroy: function () {
-        if (this.onBeforeDestroy() === false) {
+        if (this.onBeforeDestroy() === false || this.noView || !(this.view instanceof Backbone.View)) {
             return;
         }
 
-        if (!this.noView && this.view instanceof Backbone.View) {
-            this.view.destroy();
-            delete this.view;
-        }
+        this.view.destroy();
+        delete this.view;
     },
 
     /**
      * Sets view config or name. e.g.: 'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}.
      * Should be called before run() method. For example in onBeforeInit().
      * @param {Object|String|Backbone.View} view Class name or config.
+     * TODO: this method should be removed, because setConfig() do it well
      */
     setView: function (view) {
         if (view === '' || !N13.isString(view) && !N13.isObject(view) && !(view instanceof Backbone.View)) {
@@ -184,6 +192,7 @@ N13.define('App.controller.base.Controller', {
      * in case if there is only one view3 inside the view2.
      * @param {String} query
      * @return {App.view.base.View|null} found view instance or null
+     * TODO: this method should be moved to App.mixin.controller.View mixin
      */
     findView: function (query) {
         if (this.view && N13.isString(query) && query !== '') {
@@ -197,6 +206,7 @@ N13.define('App.controller.base.Controller', {
      * Returns controller instance or null if not found by index or class name
      * @param {String|Number} id Class name or index
      * @return {Object} an instance or null
+     * TODO: this method should be moved to App.mixin.controller.Controller mixin
      */
     findController: function (id) {
         if (N13.isString(id)) {
@@ -215,6 +225,7 @@ N13.define('App.controller.base.Controller', {
      * @param {Array} views Array of nested views on current view
      * @return {null|App.view.base.View}
      * @private
+     * TODO: this method should be moved to App.mixin.controller.View mixin
      */
     _findView: function (query, views) {
         var viewAlias = query.length ? query[0].replace(/^\s+|\s+$/g, '') : null; // this is a trim
@@ -244,6 +255,7 @@ N13.define('App.controller.base.Controller', {
      * Creates view, which was set by setView() method or through "view" config. It also binds events of
      * view to the handlers of current controller.
      * @private
+     * TODO: this method should be moved to App.mixin.controller.View mixin
      */
     _createView: function () {
         var cfg  = {};
@@ -270,6 +282,7 @@ N13.define('App.controller.base.Controller', {
      * Creates sub controllers instances from it's configurations or class names. This method
      * uses controllers configuration parameter to do this.
      * @private
+     * TODO: this method should be moved to App.mixin.controller.Controller mixin
      */
     _createControllers: function () {
         var i;
