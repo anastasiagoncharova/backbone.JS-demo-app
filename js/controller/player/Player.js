@@ -8,6 +8,10 @@
  */
 N13.define('App.controller.player.Player', {
     extend  : 'App.controller.base.Controller',
+    mixins  : {
+        view: 'App.mixin.controller.View',
+        ctrl: 'App.mixin.controller.Controller'
+    },
     requires: [
         'App.collection.player.Track',
         'App.Config',
@@ -15,9 +19,28 @@ N13.define('App.controller.player.Player', {
     ],
     configs : {
         /**
+         * {String} Prefix namespace for all controllers. This prefix + alias will produce
+         * full namespace for specified class. For example:
+         * controllerNs + '.' + 'module.MyController' -> 'App.controller.module.MyController'.
+         */
+        controllerNs: 'App.controller',
+        /**
          * {Array} Array of nested controllers
          */
-        controllers: ['player.Playlist']
+        controllers : ['player.Playlist'],
+        /**
+         * {String} Prefix namespace of the view, according to the view folder. For
+         * example: 'App.view'. Should be set without dot at the end. Should be
+         * 'App.view' by default.
+         */
+        viewNs      : 'App.view',
+        /**
+         * {String|Object|Backbone.View} The name of the view or configuration
+         * object, which will be controlled by this controller. e.g.:
+         * 'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}.
+         * Should be null by default
+         */
+        view        : null
     },
 
     /**
@@ -58,7 +81,7 @@ N13.define('App.controller.player.Player', {
      * between these two controllers, but the owner is Player (parent controller).
      */
     onAfterInit: function () {
-        this.findController('App.controller.player.Playlist').setConfig({
+        this.findController('player.Playlist').setConfig({
             tracks: this._tracks,
             view  : this.findView('player.Container > player.PlaylistContainer')
         });
@@ -72,6 +95,7 @@ N13.define('App.controller.player.Player', {
         (this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
         (this._controlPanel = this.findView('player.Container > player.ControlPanel')).on('played', this._onTrackPlayed, this);
 
+        this.runControllers();
         this.findView('player.Container').render();
     },
 
