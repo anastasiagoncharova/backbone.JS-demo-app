@@ -1,6 +1,7 @@
 
   TODO list file
 
+! Fix code with undefined base class in N13.define()
 - Write about auto unbind from events
 - Think about auto unbind from any object in class instance. We should check, if this class an instance of Observer mixin
 - Add unit tests for all base classes
@@ -11,5 +12,8 @@
 - findView() query argument is very long. I should think about decrease of it. For example, it should try to find specified
   view by alias in nested views too.
 - Write about global configuration
-- Add list of base classes, we need to download before write the code
-! Fix code with undefined base class in N13.define()
+- Add list of base classes, we need to download before write the cod
+- Describe noView argument
+- Describe configurations for view, controller mixins in child classes
+- Add configuration apply from mixins
+- Describe order of controller.Controller and controller.View mixins. Controller must be the first!

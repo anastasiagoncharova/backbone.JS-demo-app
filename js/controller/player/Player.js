@@ -9,8 +9,8 @@
 N13.define('App.controller.player.Player', {
     extend  : 'App.controller.base.Controller',
     mixins  : {
-        view: 'App.mixin.controller.View',
-        ctrl: 'App.mixin.controller.Controller'
+        ctrl: 'App.mixin.controller.Controller',
+        view: 'App.mixin.controller.View'
     },
     requires: [
         'App.collection.player.Track',

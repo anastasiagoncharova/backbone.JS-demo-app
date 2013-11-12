@@ -57,7 +57,7 @@ N13.define('App.mixin.Observer', {
      * @param {Object} obj Object to listen
      * @param {String} event Name of the event
      * @param {Function} fn Callback function
-     * @param {Object|undefined|null} scope Scope of the callback
+     * @param {Object|null=} scope Scope of the callback
      */
     listen: function (obj, event, fn, scope) {
         if (!N13.isFunction(obj.on)) {
