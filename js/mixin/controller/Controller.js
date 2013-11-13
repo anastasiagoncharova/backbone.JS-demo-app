@@ -31,6 +31,16 @@
  * @author DeadbraiN
  */
 N13.define('App.mixin.controller.Controller', {
+    configs : {
+        /**
+         * {String} Prefix namespace for all controllers. This prefix + alias will produce
+         * full namespace for specified class. For example:
+         * controllerNs + '.' + 'module.MyController' -> 'App.controller.module.MyController'.
+         */
+        controllerNs: 'App.controller'
+    },
+
+
     /**
      * @constructor
      * Creates sub controllers instances from it's configurations or class names. This method

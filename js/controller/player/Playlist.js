@@ -10,19 +10,6 @@ N13.define('App.controller.player.Playlist', {
     mixins : {view: 'App.mixin.controller.View'},
     configs: {
         /**
-         * {String} Prefix namespace of the view, according to the view folder. For
-         * example: 'App.view'. Should be set without dot at the end. Should be
-         * 'App.view' by default.
-         */
-        viewNs: 'App.view',
-        /**
-         * {String|Object|Backbone.View} The name of the view or configuration
-         * object, which will be controlled by this controller. e.g.:
-         * 'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}.
-         * Should be null by default
-         */
-        view  : null,
-        /**
          * {Boolean} true means that, this controller may control specified view,
          * but it can't create or destroy it. false - means that current controller
          * should create view and destroy it later.
