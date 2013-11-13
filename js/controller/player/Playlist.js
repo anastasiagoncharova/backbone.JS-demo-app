@@ -34,17 +34,12 @@ N13.define('App.controller.player.Playlist', {
         tracks: null
     },
 
+
     /**
      * Adds event handlers for playlist and add button components.
      */
     onAfterRun: function () {
         this.findView('player.PlaylistContainer > Button').on('click', this._onAddTrackClick, this);
-
-        //
-        // We need to set tracks collection to the playlist grid and render
-        // main container after that. So, tracks collection will be used in rendering.
-        //
-        this.findView('player.PlaylistContainer > player.PlaylistGrid').setTracks(this.tracks);
     },
 
     /**

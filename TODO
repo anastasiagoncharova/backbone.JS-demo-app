@@ -13,7 +13,6 @@
   view by alias in nested views too.
 - Write about global configuration
 - Add list of base classes, we need to download before write the cod
-- Describe noView argument
 - Describe configurations for view, controller mixins in child classes
 - Add configuration apply from mixins
 - Describe order of controller.Controller and controller.View mixins. Controller must be the first!

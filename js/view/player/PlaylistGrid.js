@@ -66,25 +66,19 @@ N13.define('App.view.player.PlaylistGrid', {
             this.listen(this.tracks, 'add',    function () {me.render();});
             this.listen(this.tracks, 'remove', function () {me.render();});
         }
-        this.select(this._curRow);
+        if ($.isNumeric(this._curRow)) {
+            this.select(this._curRow);
+        }
 
         this.callParent();
     },
 
     /**
      * Selects specified track by it's row index
-     * @param {Number} row Row index
+     * @param {Number|Boolean} row Row index
      */
     select: function (row) {
-        $('.playlist-grid tr[row="' + row + '"] td[col="0"]').click();
-    },
-
-    /**
-     * Sets tracks collection for this grid
-     * @param {App.collection.player.Track} tracks
-     */
-    setTracks: function (tracks) {
-        this.tracks = tracks;
+        $('.playlist-grid tr[row="' + ($.isNumeric(row) ? row : this._curRow + 1) + '"] td[col="0"]').click();
     },
 
 
@@ -106,7 +100,7 @@ N13.define('App.view.player.PlaylistGrid', {
 
             if (col === 0) {
                 this._curRowEl.addClass('selected');
-                this.trigger('selected', this.tracks.at(this._curRow), this._curRow);
+                this.trigger('selected', this.tracks.at(this._curRow));
             } else if (col === 1) {
                 this._curRowEl = null;
                 this.tracks.remove(this.tracks.at(this._curRow));

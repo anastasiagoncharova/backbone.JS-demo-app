@@ -68,11 +68,6 @@ N13.define('App.controller.player.Player', {
          * @private
          */
         this._playlistGrid = null;
-        /**
-         * {null|Number} Last selected row index or null if no selection
-         * @private
-         */
-        this._curRow       = null;
     },
 
     /**
@@ -95,18 +90,21 @@ N13.define('App.controller.player.Player', {
         (this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
         (this._controlPanel = this.findView('player.Container > player.ControlPanel')).on('played', this._onTrackPlayed, this);
 
-        this.runControllers();
+        //
+        // We need to set tracks collection to the playlist grid and render
+        // main container after that. So, tracks collection will be used in rendering.
+        //
+        this._playlistGrid.setConfig({tracks: this._tracks});
         this.findView('player.Container').render();
+        this.runControllers();
     },
 
     /**
      * 'selected' event handler. Get active Track model and run this track by ControlPanel view.
      * @param {App.model.player.Track} sel Selected Track model
-     * @param {Number} row Clicked row index
      * @private
      */
-    _onTrackSelect: function (sel, row) {
-        this._curRow = row;
+    _onTrackSelect: function (sel) {
         this._controlPanel.play(sel.get('url'));
     },
 
@@ -115,6 +113,6 @@ N13.define('App.controller.player.Player', {
      * @private
      */
     _onTrackPlayed: function () {
-        this._playlistGrid.select(++this._curRow);
+        this._playlistGrid.select(true);
     }
 });
