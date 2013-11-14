@@ -13,11 +13,11 @@ N13.define('App.view.player.PlaylistGrid', {
         /**
          * {String|Boolean} Name of the template class for current view or false if current class doesn't use template
          */
-        template        : 'player.PlaylistGrid',
+        template: 'player.PlaylistGrid',
         /**
          * {String} Name of the collection, which contains tracks for playlist
          */
-        tracks: null
+        tracks  : null
     },
 
 
