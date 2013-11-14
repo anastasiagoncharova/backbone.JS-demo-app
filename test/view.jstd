@@ -1,0 +1,34 @@
+#
+# This is jsTestDriver server configuration file. It uses for WebStorm IDE server
+# and it's console version. For details about this file see documentation:
+# https://code.google.com/p/js-test-driver/
+# This config tests base view class - App.view.base.View.
+#
+
+#
+# Here, we should keep all files, which should be included before test will be started. We don't need dynamic loading
+# so, all dependencies should be included in this section, but not in 'serve' section
+#
+load:
+  - ../lib/underscore.js
+  - ../lib/jquery-1.9.1.js
+  - ../lib/backbone.js
+  - ../lib/n13/src/n13.js
+
+  - ../js/mixin/Interface.js
+  - ../js/mixin/Observer.js
+  - ../js/template/Button.js
+  - ../js/template/player/Container.js
+  - ../js/view/base/View.js
+
+#
+# Here, we should add test suite files
+#
+test:
+  - js/util/Common.js
+  - js/view/base/View.js
+
+#
+# Server settings
+#
+server: http://localhost:2012

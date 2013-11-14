@@ -55,7 +55,6 @@
  *
  *
  * @author DeadbraiN
- * @email tmptrash@mail.ru
  */
 N13.define('App.view.base.View', {
     extend  : 'Backbone.View',
