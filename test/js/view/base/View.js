@@ -9,9 +9,10 @@ AsyncTestCase("view.base.View", {
         // {jQuery} We should create temporary placeholder for views on current document
         //
         $('body').append('<div id="viewContainer"></div>');
-        this.ct = $('#viewContainer');
+        $('body').append('<div id="viewContainer1"></div>');
+        this.ct  = $('#viewContainer');
+        this.ct1 = $('#viewContainer1');
     },
-
     /**
      * This function calls after test will complete and removes containers children
      */
@@ -19,15 +20,26 @@ AsyncTestCase("view.base.View", {
         $('body').children().remove();
     },
 
+
     /*
      * Tests base view creation
      */
     testViewCreation: function () {
-        var view = new App.view.base.View();
+        var view1;
+        var view2;
 
-        assertObject('base.View has created', view);
-        view.destroy();
+        assertNoException('base.View class should be created without configuration', function () {
+            view1 = new App.view.base.View();
+            view2 = new App.view.base.View();
+        });
+
+        assertObject('First base.View has created', view1);
+        assertObject('Second base.View has created', view2);
+
+        view1.destroy();
+        view2.destroy();
     },
+
 
     /*
      * Tests base view template related logic
@@ -39,7 +51,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM shouldn\'t be created', this.ct.children().length === 0);
         view.destroy();
     },
-
     /*
      * Tests normal existing template in configuration, but without elPath config
      */
@@ -50,7 +61,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM shouldn\'t be created', this.ct.children().length === 0);
         view.destroy();
     },
-
     /*
      * Tests normal existing template in configuration, but no data
      */
@@ -61,7 +71,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM shouldn\'t be created', this.ct.children().length > 0);
         view.destroy();
     },
-
     /*
      * Tests normal existing template in configuration, but correct data
      */
@@ -73,7 +82,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM should be created', this.ct.children().length > 0);
         view.destroy();
     },
-
     /*
      * Tests invalid template config values
      */
@@ -86,6 +94,7 @@ AsyncTestCase("view.base.View", {
         });
     },
 
+
     /*
      * Tests elPath configuration
      */
@@ -96,7 +105,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM should\'n be created', this.ct.children().length === 0);
         view.destroy();
     },
-
     /*
      * Tests elPath configuration
      */
@@ -108,7 +116,6 @@ AsyncTestCase("view.base.View", {
         assertTrue('View\'s DOM should be created', this.ct.children().length > 0);
         view.destroy();
     },
-
     /*
      * Tests invalid template config
      */
@@ -117,7 +124,7 @@ AsyncTestCase("view.base.View", {
 
         App.test.util.Common.mapValues(function (val) {
             assertException('View should fail rendering if elPath is invalid', function () {
-                view = new App.view.base.View({template: 'libraryNavigator.Container', elPath: val, listeners: {
+                view = new App.view.base.View({template: 'player.Container', elPath: val, listeners: {
                     error: function () {
                         throw new Error('View failed');
                     }
@@ -127,6 +134,43 @@ AsyncTestCase("view.base.View", {
             });
         });
     },
+
+    /*
+     * Checks if autoIncrementId config works
+     */
+    testAutoIncrementId: function () {
+        var ct;
+        var ct1;
+
+        N13.define('App.view.temp.Container', {
+            extend : 'App.view.base.View',
+            configs: {
+                template: 'player.Container'
+            }
+        });
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            configs: {
+                elPath  : 'autoInsert',
+                template: 'Button',
+                data    : {title: 'test'}
+            }
+        });
+
+        ct  = new App.view.temp.Container({items: ['temp.Button', 'temp.Button'], elPath: '#viewContainer',  autoIncrementId: 'autoInsert'});
+        ct1 = new App.view.temp.Container({items: ['temp.Button', 'temp.Button'], elPath: '#viewContainer1', autoIncrementId: 'undef'});
+        ct.render();
+        ct1.render();
+
+
+        assertTrue('View\'s DOM should be created', this.ct.children().find('button').length === 2 && ct.el.find('button').length === 2);
+        assertTrue('View\'s DOM should be created', this.ct1.children().find('button').length === 0 && ct1.el.find('button').length === 0);
+    },
+
+
+
+
+
 
     /*
      * Tests items configuration parameter
@@ -158,7 +202,7 @@ AsyncTestCase("view.base.View", {
 
         App.test.util.Common.mapValues(function (val) {
             assertException('View should fail if items configuration is invalid', function () {
-                view = new App.view.base.View({template: 'libraryNavigator.Container', elPath: '#viewContainer', items: val, listeners: {
+                view = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer', items: val, listeners: {
                     error: function () {
                         throw new Error('Creation failed');
                     }
@@ -170,6 +214,4 @@ AsyncTestCase("view.base.View", {
             });
         }, ['nil', 'emptyArray']);
     }
-
-    // TODO: add test where templateData will be null
 });
