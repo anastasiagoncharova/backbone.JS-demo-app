@@ -59,6 +59,13 @@ N13.define('App.mixin.controller.View', {
         var view;
         var View;
 
+        //
+        // view parameter must be set from outside by setConfig({view: App.view.ase.View})
+        //
+        if (this.noView) {
+            return;
+        }
+
         /**
          * @type {{cl: String}|String} The string class name or it's configuration
          */
