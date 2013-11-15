@@ -26,7 +26,7 @@ N13.define('App.controller.player.Playlist', {
      * Adds event handlers for playlist and add button components.
      */
     onAfterRun: function () {
-        this.findView('player.PlaylistContainer > Button').on('click', this._onAddTrackClick, this);
+        this.findView('Button').on('click', this._onAddTrackClick, this);
     },
 
     /**

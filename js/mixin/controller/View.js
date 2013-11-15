@@ -60,6 +60,21 @@ N13.define('App.mixin.controller.View', {
         var View;
 
         /**
+         * {String=} This field contains normalized view query. For example: 'view1 > view2' -> 'view1>view2'
+         */
+        this.normalViewQuery = null;
+
+        /**
+         * {RegEx} String left+right trimming regular expression.
+         * @private
+         */
+        this._trimRe         = /^\s+|\s+$/g
+        /**
+         * {Array} Array of view instances, which were found with findView() method
+         */
+        this._views          = [];
+
+        /**
          * @type {{cl: String}|String} The string class name or it's configuration
          */
         view = this.view;
@@ -84,14 +99,22 @@ N13.define('App.mixin.controller.View', {
      * or 'view1 > view2 > view3' or 'view1 > view2'. First and second queries are similar
      * in case if there is only one view3 inside the view2.
      * @param {String} query
-     * @return {App.view.base.View|null} found view instance or null
+     * @return {Array} Array of App.view.base.View instances or empty array
      */
     findView: function (query) {
-        if (this.view && N13.isString(query) && query !== '') {
-            return this._findView(query.split('>'), [this.view]);
+        var queryArr;
+        var me = this;
+
+        if (!me.view || !N13.isString(query) || query === '') {
+            return null;
         }
 
-        return null;
+        queryArr = _.map(query.split('>'), function (q) {return q.replace(me._trimRe, '');});
+        me._views          = [];
+        me.normalViewQuery = queryArr.join('>');
+        me._findView(queryArr, [me.view]);
+
+        return me._views[0] || me._views;
     },
 
     /**
@@ -107,35 +130,39 @@ N13.define('App.mixin.controller.View', {
         this.view = null;
     },
 
+
     /**
      * Recursive view finder. It walks thought views hierarchy and try to find
      * view by query array. See public findView() for details.
      * @param {Array} query Array of nested views from left to right.
      * @param {Array} views Array of nested views on current view
-     * @return {null|App.view.base.View}
      * @private
      */
     _findView: function (query, views) {
-        var viewAlias = query.length ? query[0].replace(/^\s+|\s+$/g, '') : null; // this is a trim
+        //
+        // As you remember, we have App.util.trim() method for trimming, but here we shouldn't use
+        // it, because of additional dependency. All base classes should have as minimum dependencies
+        // as possible. It's important if we are speaking about loose coupling.
+        //
+        var viewAlias  = query[0] || null;
+        var classNsLen = this.viewNs.length + 1;
         var i;
         var len;
 
         if (viewAlias && views) {
             for (i = 0, len = views.length; i < len; i++) {
-                //
-                // 9 - means len of 'App.view.' string
-                //
-                if (views[i].className.substr(9) === viewAlias) {
+                if (views[i].className.substr(classNsLen) === viewAlias) {
                     query.shift();
                     if (query.length === 0) {
-                        return views[i];
-                    } else {
-                        return this._findView(query, views[i].items);
+                        this._views.push(views[i]);
+                        query = this.normalViewQuery.split('>');
+                        if (query.length > 1) {
+                            this._findView(this.normalViewQuery.split('>'), [views[i]]);
+                        }
                     }
                 }
+                this._findView(query, views[i].items);
             }
         }
-
-        return null;
     }
 });

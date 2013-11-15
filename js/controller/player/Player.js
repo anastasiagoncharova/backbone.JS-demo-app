@@ -59,7 +59,7 @@ N13.define('App.controller.player.Player', {
     onAfterInit: function () {
         this.findController('player.Playlist').setConfig({
             tracks: this._tracks,
-            view  : this.findView('player.Container > player.PlaylistContainer')
+            view  : this.findView('player.PlaylistContainer')
         });
     },
 
@@ -68,8 +68,8 @@ N13.define('App.controller.player.Player', {
      * controllers we should render main view
      */
     onAfterRun: function () {
-        (this._playlistGrid = this.findView('player.Container > player.PlaylistContainer > player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
-        (this._controlPanel = this.findView('player.Container > player.ControlPanel')).on('played', this._onTrackPlayed, this);
+        (this._playlistGrid = this.findView('player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
+        (this._controlPanel = this.findView('player.ControlPanel')).on('played', this._onTrackPlayed, this);
 
         //
         // We need to set tracks collection to the playlist grid and render
