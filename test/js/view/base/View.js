@@ -135,6 +135,7 @@ AsyncTestCase("view.base.View", {
         });
     },
 
+
     /*
      * Checks if autoIncrementId config works
      */
@@ -162,12 +163,51 @@ AsyncTestCase("view.base.View", {
         ct.render();
         ct1.render();
 
-
         assertTrue('View\'s DOM should be created', this.ct.children().find('button').length === 2 && ct.el.find('button').length === 2);
         assertTrue('View\'s DOM should be created', this.ct1.children().find('button').length === 0 && ct1.el.find('button').length === 0);
+
+        ct.destroy();
+        ct1.destroy();
     },
 
+    /*
+     * Checks if containerCls config works
+     */
+    testContainerCls: function () {
+        var ct;
 
+        N13.define('App.template.temp.Container', {
+            statics: {
+                data: '' +
+                    '<div class="temp-container">' +
+                        '<div class="ct"></div>' +
+                    '</div>'
+            }
+        });
+        N13.define('App.view.temp.Container', {
+            extend : 'App.view.base.View',
+            configs: {
+                template    : 'temp.Container',
+                items       : 'temp.Button',
+                elPath      : '#viewContainer',
+                containerCls: 'ct'
+            }
+        });
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            configs: {
+                template: 'Button',
+                data    : {title: 'test'}
+            }
+        });
+
+        ct = new App.view.temp.Container();
+        ct.render();
+
+        assertTrue('View\'s DOM should be created', ct.el.find('.ct').length === 1);
+
+        ct.destroy();
+    },
 
 
 
