@@ -59,6 +59,13 @@ N13.define('App.mixin.controller.View', {
         var view;
         var View;
 
+        //
+        // view parameter must be set from outside by setConfig({view: App.view.ase.View})
+        //
+        if (this.noView) {
+            return;
+        }
+
         /**
          * {String=} This field contains normalized view query. For example: 'view1 > view2' -> 'view1>view2'
          */
