@@ -75,7 +75,7 @@ N13.define('App.mixin.controller.View', {
          * {RegEx} String left+right trimming regular expression.
          * @private
          */
-        this._trimRe         = /^\s+|\s+$/g
+        this._trimRe         = /^\s+|\s+$/g;
         /**
          * {Array} Array of view instances, which were found with findView() method
          */
