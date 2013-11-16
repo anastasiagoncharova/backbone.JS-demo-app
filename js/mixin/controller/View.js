@@ -111,19 +111,17 @@ N13.define('App.mixin.controller.View', {
     findView: function (query) {
         var queryArr;
         var me = this;
-
         if (!me.view || !N13.isString(query) || query === '') {
             return null;
         }
-
-        queryArr = _.map(query.split('>'), function (q) {return q.replace(me._trimRe, '');});
-        me._views          = [];
+        queryArr = _.map(query.split('>'), function (q) {
+            return q.replace(me._trimRe, '');
+        });
+        me._views = [];
         me.normalViewQuery = queryArr.join('>');
         me._findView(queryArr, [me.view]);
-
         return me._views[0] || me._views;
     },
-
     /**
      * Destroys a view related logic from the controller. This is an analog of a destructor.
      * In case of noView configuration parameter is set to true, then destroy will be skipped.
