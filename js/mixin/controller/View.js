@@ -76,10 +76,6 @@ N13.define('App.mixin.controller.View', {
          * @private
          */
         this._trimRe         = /^\s+|\s+$/g;
-        /**
-         * {Array} Array of view instances, which were found with findView() method
-         */
-        this._views          = [];
 
         /**
          * @type {{cl: String}|String} The string class name or it's configuration
@@ -111,16 +107,14 @@ N13.define('App.mixin.controller.View', {
     findView: function (query) {
         var queryArr;
         var me = this;
+
         if (!me.view || !N13.isString(query) || query === '') {
             return null;
         }
-        queryArr = _.map(query.split('>'), function (q) {
-            return q.replace(me._trimRe, '');
-        });
-        me._views = [];
+        queryArr = _.map(query.split('>'), function (q) {return q.replace(me._trimRe, '');});
         me.normalViewQuery = queryArr.join('>');
-        me._findView(queryArr, [me.view]);
-        return me._views[0] || me._views;
+
+        return me._findView(queryArr, [me.view]);
     },
     /**
      * Destroys a view related logic from the controller. This is an analog of a destructor.
@@ -138,9 +132,11 @@ N13.define('App.mixin.controller.View', {
 
     /**
      * Recursive view finder. It walks thought views hierarchy and try to find
-     * view by query array. See public findView() for details.
+     * view by query array. It can find only one view. So, it returns first
+     * found view and stops after that. See public findView() for details.
      * @param {Array} query Array of nested views from left to right.
      * @param {Array} views Array of nested views on current view
+     * @returns {App.view.base.View|null}
      * @private
      */
     _findView: function (query, views) {
@@ -151,23 +147,31 @@ N13.define('App.mixin.controller.View', {
         //
         var viewAlias  = query[0] || null;
         var classNsLen = this.viewNs.length + 1;
+        var view;
         var i;
         var len;
 
         if (viewAlias && views) {
             for (i = 0, len = views.length; i < len; i++) {
+                //
+                // 'App.view.my.Widget' -> 'my.Widget'
+                //
                 if (views[i].className.substr(classNsLen) === viewAlias) {
                     query.shift();
-                    if (query.length === 0) {
-                        this._views.push(views[i]);
-                        query = this.normalViewQuery.split('>');
-                        if (query.length > 1) {
-                            this._findView(this.normalViewQuery.split('>'), [views[i]]);
-                        }
+                    if (!query.length) {
+                        return views[i];
                     }
                 }
-                this._findView(query, views[i].items);
+                //
+                // HACK: query.concat() without arguments, creates array copy. We need a copy every
+                // HACK: time we appear inside this method
+                //
+                if ((view = this._findView(query.concat(), views[i].items))) {
+                    return view;
+                }
             }
         }
+
+        return null;
     }
 });
