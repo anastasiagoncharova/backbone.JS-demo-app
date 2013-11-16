@@ -46,7 +46,12 @@ N13.define('App.mixin.controller.View', {
          * 'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}.
          * Should be null by default
          */
-        view  : null
+        view  : null,
+        /**
+         * {Boolean} true means that this controller shouldn't create and destroy views, which
+         * were set in view config. /it may only listen them events and call different methods.
+         */
+        noView: true
     },
 
 

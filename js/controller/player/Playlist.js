@@ -10,12 +10,6 @@ N13.define('App.controller.player.Playlist', {
     mixins : {view: 'App.mixin.controller.View'},
     configs: {
         /**
-         * {Boolean} true means that, this controller may control specified view,
-         * but it can't create or destroy it. false - means that current controller
-         * should create view and destroy it later.
-         */
-        noView: true,
-        /**
          * {App.collection.player.Track|null} Collection of tracks for playlist
          */
         tracks: null

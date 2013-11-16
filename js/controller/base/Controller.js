@@ -1,15 +1,41 @@
 /**
- * Base controller class. All controllers should be derived from this one. The main idea of the controller is in
- * listening the events from views and call appropriate handlers. You should use "events" configuration property for
- * that. To set the view, use "view" config property. In general it contains two main methods: run() and stop().
- * They call on controller run (after creation) and stop(before destroy). By default, it creates/renders a view in
- * run and adds all event handlers to it. On stop(), it destroys the view and unbind all events.
+ * Base controller class. All controllers should be derived from this one. The main idea of the controller in
+ * listening of events from different objects and call appropriate handlers. This class contains only basic
+ * controlling logic. It can create, run, stop and destroy controller. Every methods from this list calls
+ * before and after methods. For example, run() method calls onBeforeRun() and onAfterRun() methods inside.
+ * You may override these methods for your needs. Also, you may return false in on/beforeRun() method and
+ * as a result this controller will not be run. This rule works for all other methods as well.
+ * There are additional controller mixins, which extends this class. For example, if your controller should
+ * work with views, you may add controller.View mixin for that. For details, about special controller's mixins
+ * see App.mixin.controller.* mixins.
  *
- * It may find view by query. Query is a string in format: 'view1 [> view2 [> view3 ...]]'. > symbol means embedded
- * or nested view. For example query: 'view1 > view2' means view2 inside view1. Symbol > means not only one view
- * inside other, it also means that one view inside other, inside other and so on. For example, if we have views:
- * 'view1 > view2 > view3'. We may create a query in different ways: 'view1 > view3' or 'view1 > view2 > view3'
- * or 'view1 > view2'. First and second queries are similar in case if there is only one view3 inside the view2.
+ * Usage:
+ *     N13.define('App.controller.my.Controller', {
+ *         extend  : 'App.controller.base.Controller',
+ *         //
+ *         // Turns view functionality on for this class. It adds findView() method.
+ *         //
+ *         mixins  : {view: 'App.mixin.controller.View'},
+ *         requires: 'App.view.my.MainView',
+ *         //
+ *         // This is how we are creating the view. It should be with autoRender: true config
+ *         //
+ *         configs : {view: 'my.MainView'},
+ *
+ *         //
+ *         // Here we may bind event handlers to views
+ *         //
+ *         onAfterInit: function () {
+ *             this.findView('my.MainView').on('ready', this._onReady, this);
+ *         },
+ *         //
+ *         // 'ready' event handler
+ *         //
+ *         onReady: function () {
+ *             alert('Main view is ready!!!');
+ *         }
+ *     });
+ *
  *
  * @author DeadbraiN
  */
@@ -20,18 +46,9 @@ N13.define('App.controller.base.Controller', {
     },
     configs: {
         /**
-         * TODO:
-         * TODO: i should rework this. parsing should be here, but not in the router class
-         * TODO:
-         * {String} Matcher string. This string will be used for parsing of parameters obtained from
-         * URL hash. For example: '#libraryNavigator/key/123/id34' with matcher string '/*location/id:facilityId' will
-         * be parsed into the ['/key/123', '34']
-         */
-        paramRe     : null,
-        /**
          * {Boolean} true if we want to run current controller in the constructor
          */
-        autoRun     : false
+        autoRun: false
     },
 
 
@@ -92,6 +109,7 @@ N13.define('App.controller.base.Controller', {
 
     /**
      * @constructor
+     * Run init() method for all controller related mixins. See App.mixin.controller.* for details
      */
     init: function () {
         this.callMixin('iface');

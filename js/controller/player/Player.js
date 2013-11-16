@@ -19,9 +19,15 @@ N13.define('App.controller.player.Player', {
     ],
     configs : {
         /**
+         * {Boolean} true means that, this controller may control specified view,
+         * but it can't create or destroy it. false - means that current controller
+         * should create view and destroy it later.
+         */
+        noView     : false,
+        /**
          * {Array} Array of nested controllers
          */
-        controllers : ['player.Playlist']
+        controllers: ['player.Playlist']
     },
 
     /**

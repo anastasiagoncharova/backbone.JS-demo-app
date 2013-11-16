@@ -4,12 +4,14 @@
         <meta charset="utf-8" />
         <title>Audio player</title>
 
+        <!-- Styles section -->
         <link rel="stylesheet" type="text/css" href="css/style.css"/>
         <link rel="stylesheet" type="text/css" href="css/control-panel.css"/>
         <link rel="stylesheet" type="text/css" href="css/playlist-grid.css"/>
         <link rel="stylesheet" type="text/css" href="css/playlist-container.css"/>
         <link rel="stylesheet" type="text/css" href="css/player.css"/>
 
+        <!-- Third party libraries section -->
         <script type="text/javascript" src="lib/jquery-1.9.1.js"></script>
         <script type="text/javascript" src="lib/underscore.js"></script>
         <script type="text/javascript" src="lib/backbone.js"></script>
@@ -17,6 +19,11 @@
     </head>
     <body>
         <script type="text/javascript">
+            //
+            // This is where an application is created. See App.run() method
+            // if you are looking for entry point. Please, don't save a reference
+            // to the application instance.
+            //
             N13.init({appRoot: ['App', 'js']});
             N13.create('App.Application');
         </script>
