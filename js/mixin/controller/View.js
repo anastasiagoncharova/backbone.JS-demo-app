@@ -1,19 +1,11 @@
 /**
  * This mixin is created only for App.controller.base.Controller class. It adds
  * view related logic into the controller. So, after that you may control views
- * and its nested views also. It depends on some configuration:
- *
- *     view   {String|Object|Backbone.View} The name of the view or configuration
- *            object, which will be controlled by this controller. e.g.:
- *            'libraryNavigator.View' or {cl: 'libraryNavigator.View', title: 'Yahoo!'}.
- *            Should be null by default
- *            Controller listens specified events from view and calls bind handlers.
- *     viewNs {String} Prefix namespace of the view, according to the view folder. For
- *            example: 'App.view'. Should be set without dot at the end. Should be
- *            'App.view' by default.
- *     noView {Boolean} true means that, this controller may control specified view,
- *            but it can't create or destroy it. false - means that current controller
- *            should create view and destroy it later.
+ * and its nested views also. Use view config to set related view. It will be
+ * created during controller constructing. Use noView config, if you want to
+ * point that current controller shouldn't create and destroy views. In general,
+ * noView config is needed for all nested controllers. Main controller has
+ * noView config set to false.
  *
  * Usage:
  *

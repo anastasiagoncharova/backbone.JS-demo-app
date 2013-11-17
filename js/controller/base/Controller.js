@@ -7,31 +7,23 @@
  * as a result this controller will not be run. This rule works for all other methods as well.
  * There are additional controller mixins, which extends this class. For example, if your controller should
  * work with views, you may add controller.View mixin for that. For details, about special controller's mixins
- * see App.mixin.controller.* mixins.
+ * see App.mixin.controller.* namespace.
  *
  * Usage:
  *     N13.define('App.controller.my.Controller', {
- *         extend  : 'App.controller.base.Controller',
- *         //
- *         // Turns view functionality on for this class. It adds findView() method.
- *         //
- *         mixins  : {view: 'App.mixin.controller.View'},
- *         requires: 'App.view.my.MainView',
- *         //
- *         // This is how we are creating the view. It should be with autoRender: true config
- *         //
- *         configs : {view: 'my.MainView'},
+ *         extend  : 'App.controller.base.Controller',    // This is parent class, we are inherited from
+ *         mixins  : {view: 'App.mixin.controller.View'}, // Turns view functionality on for this class. It adds findView() method.
+ *         requires: 'App.view.my.MainView',              // We should add main view class to requires section
+ *         configs : {view: 'my.MainView'},               // This is how we are creating the view. It should be with autoRender: true config
  *
- *         //
- *         // Here we may bind event handlers to views
- *         //
- *         onAfterInit: function () {
- *             this.findView('my.MainView').on('ready', this._onReady, this);
+ *         onAfterInit: function () {                     // Here we may bind event handlers to views
+ *             this.findView('my.MainView').on(           // Add ready event handler
+ *                 'ready',
+ *                 this._onReady,
+ *                 this
+ *             );
  *         },
- *         //
- *         // 'ready' event handler
- *         //
- *         onReady: function () {
+ *         onReady: function () {                         // 'ready' event handler
  *             alert('Main view is ready!!!');
  *         }
  *     });

@@ -1,32 +1,28 @@
 /**
  * This mixin is created only for App.controller.base.Controller class. It adds
- * sub controllers related logic into the controller. So, after that you may control
- * nested controllers too. It depends on some configuration:
- *
- *     controllerNs {String} Prefix namespace for all controllers. This prefix + alias will produce full namespace for specified
- *                  class. For example: controllerNs + '.' + 'module.MyController' -> 'App.controller.module.MyController'.
- *                  Default value is 'App.controller'.
- *
- *     controllers  {Array|String} Nested controllers aliases or configurations. e.g.: ['Controller'] or
- *                  [{cl: 'Controller', cfg: 123}] or 'Controller'. Default value is []
+ * sub controllers related logic into the controller. So, after that, you may control
+ * nested controllers. To setup nested controllers you should use controllers config.
  *
  * Events:
- *
  *     error Fires in case of some error
+ *         {String} Error description
  *
  * Usage:
- *
  *     N13.define('App.controller.MyController', {
- *         extend : 'App.controller.base.Controller',
- *         mixins : {ctrl: 'App.mixin.controller.Controller'},
- *         configs: {
- *             controllerNS: 'App.controller',
- *             controllers : ['NestedController1', 'NestedController2']
+ *         extend  : 'App.controller.base.Controller',
+ *         requires: ['App.view.MainView', 'App.controller.MyController'],
+ *         mixins  : {ctrl: 'App.mixin.controller.Controller', view: 'App.mixin.controller.View'},
+ *         configs : {
+ *             controllers: ['NestedController'],
+ *             view       : 'MainView'
  *         }
  *     });
  *
  *     var ctrl    = new App.controller.MyController(...);
- *     var subView = ctrl.findController('NestedController1');
+ *     var subCtrl = ctrl.findController('NestedController');
+ *
+ *     subCtrl.setConfig({view: this.findView('')});
+ *     ctrl.run();
  *
  * @author DeadbraiN
  */
