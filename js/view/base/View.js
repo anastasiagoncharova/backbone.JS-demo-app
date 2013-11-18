@@ -1,32 +1,32 @@
 /**
  * Base view. Contains base interface for all views in application. It encapsulates App.mixin.Interface mixin.
- * So you can use methods like initPrivates(), initPublics() and afterInit() as well. In general this view operates
- * with a few entities: template, items, root element and the data. All of them are available in configuration (see
+ * So you may use methods like initPrivates(), initPublics() and afterInit() as well. In general this view operates
+ * with a few entities: template, items, root element, data and so on. All of them are available in configuration (see
  * N13.configs property for details). Also, you can set these values by setConfig() method.
- *
- *   template     - is a string with html markup inside
- *   items        - nested views of current view (view inside of view inside of view...)
- *   css Path     - css query to the root DOM element, in which this view wil be rendered. By default it equals 'auto'.
- *                  It means, that view can be instantiated many times on the page. Only viewport views can exists in
- *                  one copy within the page. All other views should be reusable
- *   data         - key/value map with data, which will be applied to the template
- *   autoRender   - Means that this view should be rendered in init() method
  *
  * In general, there are two view types: Singleton (viewport) view and reusable views.
  * 1. For singleton views we should set elPath to special unique css selector ('#container', '.some-class',...).
- *    In this case, html page should contain the tag with this selector.
+ *    In this case, html page should contain the tag with this selector. In general these views contain nested views.
  * 2. Reusable views should contain 'auto' value in elPath (default value). You can just skip this parameter for that.
  *    Later, the application will apply unique ids for this views and this.el properties will be pointed to this ids.
- *    It means, that it will be unique for all view instances.
+ *    It means, that it will be unique for all sub view instances.
  *
- * Here is an example:
+ * Also, you may need for some additional functionality. For example: show/hide or enable/disable view. For this, we
+ * have special mixins in App.mixin.view.* namespace. See them for details.
  *
+ * Usage:
  *   N13.define('App.view.MyView', {
  *       extend : 'App.view.base.View',
  *       configs: {
- *           template   : 'myTemplate',
- *           items      : ['subView1', {cl: 'subView2', title: 'Sub View'}],
- *           elPath     : '.myContainer'
+ *           template: 'myTemplate',      // Underscore template for main view
+ *           items   : [                  // Sub views
+ *               'subView1',
+ *               {
+ *                   cl   : 'subView2',
+ *                   title: 'Sub View'
+ *               }
+ *           ],
+ *           elPath  : '.myContainer'     // elPath must be set for main views, for sub views it should be 'auto'
  *       },
  *
  *       onBeforeRender: function () {
@@ -36,7 +36,7 @@
  *   });
  *
  *
- * Triggered events:
+ * Events:
  *     beforeinit    - fires before instance is created.
  *     init          - fires after instance is created.
  *     beforerender  - fires before view is rendered.

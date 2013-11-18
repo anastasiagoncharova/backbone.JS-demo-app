@@ -97,7 +97,7 @@ AsyncTestCase("view.base.View", {
      * Tests templateDataProp config. It points to data property, which
      * will be applied to the html template by underscore template engine
      */
-    testTemplateDataProp: function () {
+    testTemplateDataPropConfig: function () {
         N13.define('App.template.temp.Button', {
             statics: {
                 dat: '<button type="button"><%= title %></button>'
@@ -113,14 +113,39 @@ AsyncTestCase("view.base.View", {
     /*
      * Checks invalid data property values
      */
-    testInvalidTemplateDataPropValues: function () {
+    testInvalidTemplateDataPropConfig: function () {
         App.test.util.Common.mapValues(function (val) {
             var view = new App.view.base.View({templateDataProp: val, template: 'Button', elPath: '#viewContainer'});
             assertFalse('View shouldn\'t render without data config', view.render());
             view.destroy();
         }, ['string', 'capitalString', 'longString', 'specialString']);
     },
+    /*
+     * Checks invalid templateNs config property
+     */
+    testInvalidTemplateNsConfig: function () {
+        App.test.util.Common.mapValues(function (val) {
+            var view = new App.view.base.View({templateNs: val, template: 'Button', elPath: '#viewContainer'});
+            assertFalse('View shouldn\'t render without data config', view.render());
+            view.destroy();
+        });
+    },
+    /*
+     * Checks correct templateNs config property
+     */
+    testTemplateNsConfig: function () {
+        var view;
 
+        N13.define('App.template.temp.Button', {
+            statics: {
+                data: '<button type="button">Test</button>'
+            }
+        });
+        view = new App.view.base.View({templateNs: 'App.template.temp', template: 'Button', elPath: '#viewContainer'});
+
+        assertTrue('View should render the button', view.render() === view);
+        view.destroy();
+    },
 
     /*
      * Tests elPath configuration
