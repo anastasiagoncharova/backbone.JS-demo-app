@@ -93,6 +93,33 @@ AsyncTestCase("view.base.View", {
             });
         });
     },
+    /*
+     * Tests templateDataProp config. It points to data property, which
+     * will be applied to the html template by underscore template engine
+     */
+    testTemplateDataProp: function () {
+        N13.define('App.template.temp.Button', {
+            statics: {
+                dat: '<button type="button"><%= title %></button>'
+            }
+        });
+        var view = new App.view.base.View({templateDataProp: 'dat', template: 'temp.Button', elPath: '#viewContainer'});
+
+        view.setConfig({dat: {title: 'Test'}});
+        view.render();
+        assertTrue('Button should contain "Test" title', this.ct.find('button')[0].innerText === 'Test');
+        view.destroy();
+    },
+    /*
+     * Checks invalid data property values
+     */
+    testInvalidTemplateDataPropValues: function () {
+        App.test.util.Common.mapValues(function (val) {
+            var view = new App.view.base.View({templateDataProp: val, template: 'Button', elPath: '#viewContainer'});
+            assertFalse('View shouldn\'t render without data config', view.render());
+            view.destroy();
+        }, ['string', 'capitalString', 'longString', 'specialString']);
+    },
 
 
     /*

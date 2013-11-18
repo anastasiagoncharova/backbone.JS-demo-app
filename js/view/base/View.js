@@ -245,9 +245,14 @@ N13.define('App.view.base.View', {
      * @returns {Boolean|Object} true if view was rendered, this - otherwise
      */
     render: function (containerQuery) {
-        var Tpl = N13.ns(this.templateNs + '.' + this.template, false) || {};
+        var Tpl      = N13.ns(this.templateNs + '.' + this.template, false) || {};
+        var dataProp = this.templateDataProp;
         var tplData;
 
+        if (!N13.isString(dataProp) || dataProp === '') {
+            this.trigger('error', 'Data property is invalid. Not empty string is required. See templateDataProp config for details. Class: "' + this.className + '"');
+            return false;
+        }
         //
         // elPath should be 'auto' or CSS Query
         //
@@ -277,13 +282,13 @@ N13.define('App.view.base.View', {
         }
         this.callParent(arguments);
         this.clear();
-        tplData = Tpl[this.templateDataProp];
-        if (tplData === '' || !N13.isString(tplData) || !N13.isObject(this.data) && this.data !== null) {
+        tplData = Tpl[dataProp];
+        if (tplData === '' || !N13.isString(tplData) || !N13.isObject(this[dataProp]) && this[dataProp] !== null) {
             this.trigger('error', 'Invalid template data in view: "' + this.className + '"');
             return false;
         }
         try {
-            this.el.append(_.template(tplData, this.data));
+            this.el.append(_.template(tplData, this[dataProp]));
         } catch (e) {
             this.trigger('error', 'Template data is invalid in view "' + this.className + '". Message: "' + e.message + '"');
             return false;
