@@ -115,7 +115,7 @@ AsyncTestCase("view.base.View", {
      */
     testInvalidTemplateDataPropConfig: function () {
         App.test.util.Common.mapValues(function (val) {
-            var view = new App.view.base.View({templateDataProp: val, template: 'Button', elPath: '#viewContainer'});
+            var view = new App.view.base.View({templateDataProp: val, template: 'player.Container', elPath: '#viewContainer'});
             assertFalse('View shouldn\'t render without data config', view.render());
             view.destroy();
         }, ['string', 'capitalString', 'longString', 'specialString']);
@@ -125,7 +125,7 @@ AsyncTestCase("view.base.View", {
      */
     testInvalidTemplateNsConfig: function () {
         App.test.util.Common.mapValues(function (val) {
-            var view = new App.view.base.View({templateNs: val, template: 'Button', elPath: '#viewContainer'});
+            var view = new App.view.base.View({templateNs: val, template: 'player.Container', elPath: '#viewContainer'});
             assertFalse('View shouldn\'t render without data config', view.render());
             view.destroy();
         });
@@ -134,6 +134,41 @@ AsyncTestCase("view.base.View", {
      * Checks correct templateNs config property
      */
     testTemplateNsConfig: function () {
+        var view;
+
+        N13.define('App.template.temp.Button', {
+            statics: {
+                data: '<button type="button">Test</button>'
+            }
+        });
+        view = new App.view.base.View({templateNs: 'App.template.temp', template: 'Button', elPath: '#viewContainer'});
+
+        assertTrue('View should render the button', view.render() === view);
+        view.destroy();
+    },
+
+    /*
+     * Checks invalid viewNs config property
+     */
+    testInvalidViewNsConfig: function () {
+        N13.define('App.view.temp.Button', {
+            extend  : 'App.view.base.View',
+            requires: 'App.view.player.Container',
+            configs : {
+                template: 'player.Container'
+            }
+        });
+        App.test.util.Common.mapValues(function (val) {
+            var view = new App.view.base.View({viewNs: val, template: 'player.Container', items: ['temp.Button', 'temp.Button']});
+            view.render('#viewContainer');
+            assertTrue('View shouldn\'t render without correct viewNs config',  view.el.find('.innerContainer').length === 2);
+            view.destroy();
+        });
+    },
+    /*
+     * Checks correct viewNs config property
+     */
+    testViewNsConfig: function () {
         var view;
 
         N13.define('App.template.temp.Button', {

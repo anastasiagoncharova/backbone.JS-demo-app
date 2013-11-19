@@ -5,3 +5,4 @@
 - Add base collection. It should solve model dependency issue and, maybe parameters issue (see OmniRetail base collection)
 - Fix cache property
   view by alias in nested views too. Also we need to add #id and [index]
+- Describe autoRun for sub controllers and the issue about it's views

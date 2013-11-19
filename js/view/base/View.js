@@ -453,12 +453,14 @@ N13.define('App.view.base.View', {
      * @private
      */
     _createItems: function () {
-        var items     = N13.isString(this.items) ? [this.items] : this.items;
-        var ns        = N13.ns;
-        var isString  = N13.isString;
-        var isObject  = N13.isObject;
-        var instances = [];
-        var viewNs    = this.viewNs;
+        var items      = N13.isString(this.items) ? [this.items] : this.items;
+        var ns         = N13.ns;
+        var isString   = N13.isString;
+        var isObject   = N13.isObject;
+        var isFunction = N13.isFunction;
+        var instances  = [];
+        var viewNs     = this.viewNs;
+        var View;
         var i;
         var len;
         var item;
@@ -474,9 +476,19 @@ N13.define('App.view.base.View', {
             item = items[i];
 
             if (isString(item)) {
-                instances.push(view = new (ns(viewNs + '.' + item, false))());
+                View = ns(viewNs + '.' + item, false);
+                if (!isFunction(View)) {
+                    this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
+                    continue;
+                }
+                instances.push(view = new View());
             } else if (isObject(item)) {
-                instances.push(view = new (ns(viewNs + '.' + item.cl, false))(item));
+                View = ns(viewNs + '.' + item.cl, false);
+                if (!isFunction(View)) {
+                    this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
+                    continue;
+                }
+                instances.push(view = new View(item));
             } else {
                 this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
             }
