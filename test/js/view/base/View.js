@@ -224,9 +224,51 @@ AsyncTestCase("view.base.View", {
 
 
     /*
+     * Tests items configuration parameter
+     */
+    testEmptyItemsConfig1: function () {
+        var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: []});
+
+        view.setConfig({data: {title: 'Test'}});
+        assertObject('View without sub items should be rendered', view.render());
+        view.destroy();
+    },
+    /*
+     * Tests items configuration parameter
+     */
+    testEmptyItemsConfig2: function () {
+        var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: null});
+
+        view.setConfig({data: {title: 'Test'}});
+        assertObject('View without sub items should be rendered', view.render());
+        view.destroy();
+    },
+    /*
+     * Tests invalid values for items configuration
+     */
+    testInvalidItemsConfig: function () {
+        var view;
+
+        App.test.util.Common.mapValues(function (val) {
+            assertException('View should fail if items configuration is invalid', function () {
+                view = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer', items: val, listeners: {
+                    error: function () {
+                        throw new Error('Creation failed');
+                    }
+                }});
+                if (!view.render()) {
+                    throw new Error('Render method failed');
+                }
+                view.destroy();
+            });
+        }, ['nil', 'emptyArray']);
+    },
+
+
+    /*
      * Checks if autoIncrementId config works
      */
-    testAutoIncrementId: function () {
+    testAutoIncrementIdConfig: function () {
         var ct;
         var ct1;
 
@@ -260,7 +302,7 @@ AsyncTestCase("view.base.View", {
     /*
      * Checks if containerCls config works
      */
-    testContainerCls: function () {
+    testContainerClsConfig: function () {
         var ct;
 
         N13.define('App.template.temp.Container', {
@@ -297,47 +339,43 @@ AsyncTestCase("view.base.View", {
     },
 
 
-
-
     /*
-     * Tests items configuration parameter
+     * Checks if autoRender config works
      */
-    testEmptyItemsConfig1: function () {
-        var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: []});
+    testAutoRenderConfig: function () {
+        var ct;
 
-        view.setConfig({data: {title: 'Test'}});
-        assertObject('View without sub items should be rendered', view.render());
-        view.destroy();
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            configs: {
+                template  : 'Button',
+                elPath    : '#viewContainer',
+                autoRender: true,
+                data      : {title: 'Test'}
+            }
+        });
+
+        ct = new App.view.temp.Button();
+        assertTrue('Button DOM should be created', ct.el.find('button').length === 1);
+
+        ct.destroy();
     },
-
     /*
-     * Tests items configuration parameter
+     * Checks if autoRender config works with invalid values
      */
-    testEmptyItemsConfig2: function () {
-        var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: null});
-
-        view.setConfig({data: {title: 'Test'}});
-        assertObject('View without sub items should be rendered', view.render());
-        view.destroy();
-    },
-
-    /*
-     * Tests invalid values for items configuration
-     */
-    testInvalidItemsConfig: function () {
-        var view;
+    testInvalidAutoRenderConfig: function () {
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            configs: {
+                template  : 'Button',
+                elPath    : '#viewContainer',
+                data      : {title: 'Test'}
+            }
+        });
 
         App.test.util.Common.mapValues(function (val) {
-            assertException('View should fail if items configuration is invalid', function () {
-                view = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer', items: val, listeners: {
-                    error: function () {
-                        throw new Error('Creation failed');
-                    }
-                }});
-                if (!view.render()) {
-                    throw new Error('Render method failed');
-                }
-                view.destroy();
+            assertNoException('View should fail if items configuration is invalid', function () {
+                (new App.view.temp.Button({autoRender: val})).destroy();
             });
         }, ['nil', 'emptyArray']);
     }
