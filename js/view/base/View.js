@@ -278,6 +278,7 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforerender', this);
         if (this.onBeforeRender(this.el) === false) {
+            this.trigger('debug', 'Rendering of view "' + this.className + '" was stopped, because onBeforeRender() method had returned false');
             return this;
         }
         this.callParent(arguments);
@@ -304,6 +305,7 @@ N13.define('App.view.base.View', {
     /**
      * Removes all DOM nodes of this view and all nested, but the instances are still available. This method
      * is called before render() and destroy() methods.
+     * @return {App.view.base.View|Boolean} this or false
      */
     clear: function () {
         var items = this.items;
@@ -312,12 +314,14 @@ N13.define('App.view.base.View', {
         var len;
 
         if (!this.rendered) {
-            return;
+            this.trigger('debug', 'Method clear() was called, but view "' + this.className + '" had not rendered');
+            return false;
         }
 
         this.trigger('beforeclear');
         if (this.onBeforeClear() === false) {
-            return;
+            this.trigger('debug', 'Clearing of view "' + this.className + '" was stopped, because onBeforeClear() method had returned false');
+            return false;
         }
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
@@ -334,11 +338,14 @@ N13.define('App.view.base.View', {
         this.rendered = false;
         this.onAfterClear();
         this.trigger('clear');
+
+        return this;
     },
 
     /**
      * Calls before view will be destroyed. Destroys all nested views
      * first and after that destroys itself.
+     * @return {App.view.base.View|Boolean} this or false
      */
     destroy: function () {
         var items = this.items;
@@ -347,7 +354,8 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforedestroy', this);
         if (this.onBeforeDestroy() === false) {
-            return;
+            this.trigger('debug', 'Destroying of view "' + this.className + '" was stopped, because onBeforeDestroy() method has returned false');
+            return false;
         }
         this.callMixin('observe');
         //
@@ -370,6 +378,8 @@ N13.define('App.view.base.View', {
         this.undelegateEvents();
         this.onAfterDestroy();
         this.trigger('destroy');
+
+        return this;
     },
 
 
@@ -387,12 +397,14 @@ N13.define('App.view.base.View', {
         var i;
         var len;
 
-        if (!N13.isArray(items) || items.length <= 0) {
+        if (!N13.isArray(items)) {
+            this.trigger('error', 'Impossible to render nested views of view "' + this.className + '". base.View::items config does not contain them.');
             return;
         }
         containers = this.el.find('.' + this.containerCls);
         if (containers.length < items.length) {
-            throw Error('Template of view "' + this.className + '" doesn\'t contain enough containers for nested views. Expected ' + items.length + '.');
+            this.trigger('error', 'Template of view "' + this.className + '" doesn\'t contain enough containers for nested views. Expected ' + items.length + '.');
+            return;
         }
         for (i = 0, len = items.length; i < len; i++) {
             item = items[i];
@@ -470,6 +482,7 @@ N13.define('App.view.base.View', {
         // Create an array of inner views instances without rendering
         //
         if (!N13.isArray(items)) {
+            this.trigger('error', 'Impossible to create nested views of view "' + this.className + '". base.View::items config does not contain them.');
             return;
         }
         for (i = 0, len = items.length; i < len; i++) {
@@ -478,19 +491,19 @@ N13.define('App.view.base.View', {
             if (isString(item)) {
                 View = ns(viewNs + '.' + item, false);
                 if (!isFunction(View)) {
-                    this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
+                    this.trigger('error', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
                     continue;
                 }
                 instances.push(view = new View());
             } else if (isObject(item)) {
                 View = ns(viewNs + '.' + item.cl, false);
                 if (!isFunction(View)) {
-                    this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
+                    this.trigger('error', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
                     continue;
                 }
                 instances.push(view = new View(item));
             } else {
-                this.trigger('debug', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
+                this.trigger('error', 'Invalid nested view "' + item + '" of view "' + this.className + '". This view will be skipped.');
             }
         }
         this.items = instances;
