@@ -37,18 +37,18 @@ N13.define('App.mixin.Observer', {
         var listener;
         var i;
 
+        /**
+         * {Array} List of the objects, which has an event handlers
+         * @private
+         */
+        this._listeners = [];
+
         for (i in listeners) {
             if (listeners.hasOwnProperty(i)) {
                 listener = listeners[i];
                 this.listen(this, i, N13.isFunction(listener) ? listener : listener.fn, listener.scope);
             }
         }
-
-        /**
-         * {Array} List of the objects, which has an event handlers
-         * @private
-         */
-        this._listeners = [];
     },
 
     /**

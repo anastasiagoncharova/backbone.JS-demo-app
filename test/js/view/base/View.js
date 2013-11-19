@@ -266,6 +266,21 @@ AsyncTestCase("view.base.View", {
 
 
     /*
+     * Tests listeners configuration
+     */
+    testListenersConfig: function () {
+        var res  = false;
+        var cb   = function () {res = true;};
+        var view;
+
+        assertNoException('View with listeners config should be created', function () {
+            view = new App.view.base.View({listeners: {beforeinit: cb}});
+            assertTrue('listeners config should work', res);
+        });
+    },
+
+
+    /*
      * Checks if autoIncrementId config works
      */
     testAutoIncrementIdConfig: function () {
