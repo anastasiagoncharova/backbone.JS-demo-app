@@ -21,25 +21,9 @@ AsyncTestCase("view.base.View", {
     },
 
 
-    /*
-     * Tests base view creation
-     */
-    testViewCreation: function () {
-        var view1;
-        var view2;
-
-        assertNoException('base.View class should be created without configuration', function () {
-            view1 = new App.view.base.View();
-            view2 = new App.view.base.View();
-        });
-
-        assertObject('First base.View has created', view1);
-        assertObject('Second base.View has created', view2);
-
-        view1.destroy();
-        view2.destroy();
-    },
-
+    //
+    // This is configuration section. All tests below will test config parameters.
+    //
 
     /*
      * Tests base view template related logic
@@ -409,5 +393,62 @@ AsyncTestCase("view.base.View", {
                 (new App.view.temp.Button({autoRender: val})).destroy();
             });
         }, ['nil', 'emptyArray']);
+    },
+
+
+    //
+    // This public methods section. All tests below will test public methods.
+    //
+
+    /*
+     * Tests base view creation and init() method call
+     */
+    testInitMethod: function () {
+        var view1;
+        var view2;
+        var res = 0;
+        var bi  = function () {res++;};
+        var i   = function () {res++;};
+
+        assertNoException('base.View class should be created without configuration', function () {
+            view1 = new App.view.base.View({listeners: {beforeinit: bi, init: i}});
+            view2 = new App.view.base.View();
+
+            assertObject('First base.View has created', view1);
+            assertObject('Second base.View has created', view2);
+            assertTrue('init() method should be called', res === 2);
+
+
+            // Nothing should happen
+            view1.init();
+            view1.destroy();
+            view2.destroy();
+        });
+    },
+
+    /*
+     * Tests render() method
+     */
+    testRenderMethod: function () {
+        var view1;
+        var view2;
+
+        view1 = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer'});
+        view2 = new App.view.base.View({template: 'player.Container'});
+        assertTrue('render() method should work', view1.render() === view1 && view1.el.children().length > 0);
+        assertTrue('render() method should work', view2.render('#viewContainer1') === view2 && view2.el.children().length > 0);
+        view1.destroy();
+    },
+    /*
+     * Tests render() method with invalid values
+     */
+    testInvalidRenderMethod: function () {
+        var view;
+
+        App.test.util.Common.mapValues(function (val) {
+            view = new App.view.base.View({template: 'player.Container'});
+            assertFalse('View shouldn\'t be rendered if root tag query is invalid', view.render(val));
+            view.destroy();
+        });
     }
 });

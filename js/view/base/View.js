@@ -100,7 +100,7 @@ N13.define('App.view.base.View', {
          */
         viewNs          : 'App.view',
         /**
-         * {Array} Array of view's class names or configurations, which will be inside the current view.
+         * {Array|null} Array of view's class names or configurations, which will be inside the current view.
          * e.g.: ['libraryNavigator.View', 'libraryNavigator.MyView'] or [{cl: 'libraryNavigator.View', title: 'Yahoo!'}].
          * You can use 'cl' property to set the class name.
          */
@@ -189,6 +189,17 @@ N13.define('App.view.base.View', {
     },
 
     /**
+     * Calls at the beginning of init() method call. Here we must create and initialize all private fields.
+     */
+    initPrivates: function () {
+        /**
+         * {Boolean} Means that init(0 method was called or not. It must be called only once.
+         * @private
+         */
+        this._inited = false;
+    },
+
+    /**
      * Public fields initializer and creator. This is just stub. In child classes we
      * can use this method without mixin. Like this:
      *
@@ -216,6 +227,12 @@ N13.define('App.view.base.View', {
      * for this and all nested views.
      */
     init: function () {
+        if (this._inited) {
+            //noinspection JSUnresolvedVariable
+            this.trigger('debug', 'init() method is called twice or more in class "' + this.className + '"');
+            return;
+        }
+
         //
         // this.$el should be declared before Backbone.View will be called,
         // because Backbone.View uses it for event binding. If auto increment value is set, then
@@ -231,7 +248,9 @@ N13.define('App.view.base.View', {
         this._createItems();
         this.onAfterInit();
         this.trigger('init');
+        this._inited = true;
 
+        //noinspection JSUnresolvedVariable
         if (this.autoRender) {
             this.render();
         }
