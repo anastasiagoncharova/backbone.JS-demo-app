@@ -193,10 +193,14 @@ N13.define('App.view.base.View', {
      */
     initPrivates: function () {
         /**
-         * {Boolean} Means that init(0 method was called or not. It must be called only once.
+         * {Boolean} Means that init() method was called or not. It must be called only once.
          * @private
          */
-        this._inited = false;
+        this._inited    = false;
+        /**
+         * {Boolean} Means that destroyed instance mustn't be destroyed twice or more
+         */
+        this._destroyed = false;
     },
 
     /**
@@ -371,6 +375,11 @@ N13.define('App.view.base.View', {
         var i;
         var len;
 
+        if (this._destroyed) {
+            this.trigger('debug', 'destroy() method is called twice or more in class "' + this.className + '"');
+            return false;
+        }
+
         this.trigger('beforedestroy', this);
         if (this.onBeforeDestroy() === false) {
             this.trigger('debug', 'Destroying of view "' + this.className + '" was stopped, because onBeforeDestroy() method has returned false');
@@ -397,6 +406,7 @@ N13.define('App.view.base.View', {
         this.undelegateEvents();
         this.onAfterDestroy();
         this.trigger('destroy');
+        this._destroyed = true;
 
         return this;
     },

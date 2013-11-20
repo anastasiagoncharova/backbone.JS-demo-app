@@ -437,6 +437,7 @@ AsyncTestCase("view.base.View", {
         view2 = new App.view.base.View({template: 'player.Container'});
         assertTrue('render() method should work', view1.render() === view1 && view1.el.children().length > 0);
         assertTrue('render() method should work', view2.render('#viewContainer1') === view2 && view2.el.children().length > 0);
+        view2.destroy();
         view1.destroy();
     },
     /*
@@ -450,5 +451,33 @@ AsyncTestCase("view.base.View", {
             assertFalse('View shouldn\'t be rendered if root tag query is invalid', view.render(val));
             view.destroy();
         });
+    },
+
+
+    /*
+     * Tests clear() method. It should clear created DOM
+     */
+    testClearMethod: function () {
+        var view;
+
+        view = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer'});
+        view.render();
+        view.clear();
+        assertTrue('clear() method should clear created DOM', view.el.children().length === 0);
+        view.destroy();
+    },
+
+
+    /*
+     * Tests destroy() method
+     */
+    testDestroyMethod: function () {
+        var view;
+
+        view = new App.view.base.View({template: 'player.Container', elPath: '#viewContainer'});
+        view.render();
+        assertTrue('render() method should add new DOM', view.el.children().length > 0);
+        view.destroy();
+        assertTrue('destroy() method should remove created DOM', view.el.children().length === 0);
     }
 });
