@@ -276,6 +276,22 @@ AsyncTestCase("view.base.View", {
         assertNoException('View with listeners config should be created', function () {
             view = new App.view.base.View({listeners: {beforeinit: cb}});
             assertTrue('listeners config should work', res);
+            view.destroy();
+        });
+    },
+    /*
+     * Tests invalid listeners configuration values
+     */
+    testInvalidListenersConfig: function () {
+        var res  = false;
+        var cb   = function () {res = true;};
+        var view;
+
+        App.test.util.Common.mapValues(function (val) {
+            res  = false;
+            view = new App.view.base.View({listeners: val});
+            assertFalse('listeners config shouldn\'t work with invalid values', res);
+            view.destroy();
         });
     },
 

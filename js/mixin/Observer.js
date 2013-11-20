@@ -8,6 +8,10 @@
  * Dependencies:
  *     Backbone.Events
  *
+ * Events:
+ *     error  Fires in case of error
+ *         {String} Error message
+ *
  * Example:
  *
  *     N13.define('App.Class', {
@@ -33,7 +37,8 @@ N13.define('App.mixin.Observer', {
      * Mixin constructor
      */
     init: function () {
-        var listeners = this.listeners || {};
+        var listeners  = this.listeners || {};
+        var isFunction = N13.isFunction;
         var listener;
         var i;
 
@@ -43,10 +48,17 @@ N13.define('App.mixin.Observer', {
          */
         this._listeners = [];
 
+        if (!N13.isObject(listeners)) {
+            this.trigger('error', 'Invalid listeners configuration in class: "' + this.className + '"');
+            return;
+        }
         for (i in listeners) {
             if (listeners.hasOwnProperty(i)) {
-                listener = listeners[i];
-                this.listen(this, i, N13.isFunction(listener) ? listener : listener.fn, listener.scope);
+                if (!isFunction(listener = isFunction(listeners[i]) ? listeners[i] : listeners[i].fn)) {
+                    this.trigger('error', 'Invalid listener in class: "' + this.className + '"');
+                    continue;
+                }
+                this.listen(this, i, listener, listener.scope);
             }
         }
     },
