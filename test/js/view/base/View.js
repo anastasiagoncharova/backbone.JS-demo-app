@@ -488,24 +488,67 @@ AsyncTestCase("view.base.View", {
     // View mixins section. This sections contains unit tests for App.mixin.view.* mixins, which
     // were created for extending of App.view.base.View class.
     //
+
     testShowMixin: function () {
         var view;
+        var res = 0;
+        var cb  = function () {res++;};
 
         N13.define('App.view.temp.Button', {
             extend : 'App.view.base.View',
             mixins : {show: 'App.mixin.view.Show'},
             configs: {
-                template: 'Button',
-                data    : {title: 'Test'}
+                template    : 'Button',
+                data        : {title: 'Test'},
+                onBeforeShow: cb,
+                onAfterShow : cb,
+                onBeforeHide: cb,
+                onAfterHide : cb,
+                listeners   : {
+                    beforeshow: cb,
+                    show      : cb,
+                    beforehide: cb,
+                    hide      : cb
+                }
             }
         });
 
         view = new App.view.temp.Button();
         view.render('#viewContainer');
         assertTrue('View should be hidden after hide() method call', view.el.css('display') !== 'none' && view.hide() === true && view.el.css('display') === 'none');
-        assertTrue('View should be hidden after hide() method call', view.el.css('display') === 'none' && view.show() === true && view.el.css('display') !== 'none');
+        assertTrue('View should be shown after show() method call',  view.el.css('display') === 'none' && view.show() === true && view.el.css('display') !== 'none');
+        assertTrue('Before and after methods and events should work', res === 8);
         view.destroy();
     },
+    testEnableMixin: function () {
+        var view;
+        var res = 0;
+        var cb  = function () {res++;};
 
-    testEnableMixin: function () {}
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            mixins : {show: 'App.mixin.view.Enable'},
+            configs: {
+                template    : 'Button',
+                data        : {title: 'Test'},
+                onBeforeEnable : cb,
+                onAfterEnable  : cb,
+                onBeforeDisable: cb,
+                onAfterDisable : cb,
+                listeners   : {
+                    beforeenable : cb,
+                    enable       : cb,
+                    beforedisable: cb,
+                    disable      : cb
+                }
+            }
+        });
+
+        view = new App.view.temp.Button();
+        view.render('#viewContainer');
+        assertTrue('View should be enabled after enable() method call',   view.el.hasClass(view.disableCls) === false && view.disable() === true && view.el.hasClass(view.disableCls) === true);
+        assertTrue('View should be disabled after disable() method call', view.el.hasClass(view.disableCls) === true  && view.enable()  === true && view.el.hasClass(view.disableCls) === false);
+        assertTrue('Before and after methods and events should work', res === 8);
+        view.destroy();
+    }
 });

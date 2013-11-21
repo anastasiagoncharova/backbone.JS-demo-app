@@ -32,6 +32,15 @@
  * @author DeadbraiN
  */
 N13.define('App.mixin.view.Enable', {
+    configs: {
+        /**
+         * {String} Name of the class, which will be added for this and all nested views for disabling
+         * @private
+         */
+        disableCls: 'disabled'
+    },
+
+
     /**
      * @interface
      * Calls before disable() method will be called.
@@ -58,6 +67,7 @@ N13.define('App.mixin.view.Enable', {
 
     /**
      * Enables current and all nested views.
+     * @returns {Boolean} true if enabling has finished fine, false - otherwice
      */
     enable: function () {
         var items = this.items;
@@ -65,13 +75,16 @@ N13.define('App.mixin.view.Enable', {
         var len;
 
         if (!this.rendered) {
-            return;
+            this.trigger('debug', 'enable() method was called, but view "' + this.className + '" has not rendered yet.');
+            return false;
         }
 
         this.trigger('beforeenable');
         if (this.onBeforeEnable() === false) {
-            return;
+            this.trigger('debug', 'Enabling of view "' + this.className + '" was stopped, because onBeforeEnable() method has returned false');
+            return false;
         }
+        this.el.removeClass(this.disableCls);
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
                 items[i].enable();
@@ -79,10 +92,13 @@ N13.define('App.mixin.view.Enable', {
         }
         this.onAfterEnable();
         this.trigger('enable');
+
+        return true;
     },
 
     /**
      * Disables current and all nested views. It also adds 'disabled' class for all nested views.
+     * @returns {Boolean} true if disabling has finished fine, false - otherwice
      */
     disable: function () {
         var items = this.items;
@@ -90,13 +106,16 @@ N13.define('App.mixin.view.Enable', {
         var len;
 
         if (!this.rendered) {
-            return;
+            this.trigger('debug', 'disable() method was called, but view "' + this.className + '" has not rendered yet.');
+            return false;
         }
 
         this.trigger('beforedisable');
         if (this.onBeforeDisable() === false) {
-            return;
+            this.trigger('debug', 'Disabling of view "' + this.className + '" was stopped, because onBeforeDisable() method has returned false');
+            return false;
         }
+        this.el.addClass(this.disableCls);
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
                 items[i].disable();
@@ -104,5 +123,7 @@ N13.define('App.mixin.view.Enable', {
         }
         this.onAfterDisable();
         this.trigger('disable');
+
+        return true;
     }
 });
