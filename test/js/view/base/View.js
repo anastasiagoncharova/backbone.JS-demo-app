@@ -1,5 +1,7 @@
 /*global App */
 
+// TODO: add tests for onBeforeXXX() and onAfterXXX() methods
+
 AsyncTestCase("view.base.View", {
     /**
      * This function calls every time before test starts and creates empty container for current view
@@ -479,5 +481,31 @@ AsyncTestCase("view.base.View", {
         assertTrue('render() method should add new DOM', view.el.children().length > 0);
         view.destroy();
         assertTrue('destroy() method should remove created DOM', view.el.children().length === 0);
-    }
+    },
+
+
+    //
+    // View mixins section. This sections contains unit tests for App.mixin.view.* mixins, which
+    // were created for extending of App.view.base.View class.
+    //
+    testShowMixin: function () {
+        var view;
+
+        N13.define('App.view.temp.Button', {
+            extend : 'App.view.base.View',
+            mixins : {show: 'App.mixin.view.Show'},
+            configs: {
+                template: 'Button',
+                data    : {title: 'Test'}
+            }
+        });
+
+        view = new App.view.temp.Button();
+        view.render('#viewContainer');
+        assertTrue('View should be hidden after hide() method call', view.el.css('display') !== 'none' && view.hide() === true && view.el.css('display') === 'none');
+        assertTrue('View should be hidden after hide() method call', view.el.css('display') === 'none' && view.show() === true && view.el.css('display') !== 'none');
+        view.destroy();
+    },
+
+    testEnableMixin: function () {}
 });

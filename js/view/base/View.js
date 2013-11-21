@@ -301,7 +301,7 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforerender', this);
         if (this.onBeforeRender(this.el) === false) {
-            this.trigger('debug', 'Rendering of view "' + this.className + '" was stopped, because onBeforeRender() method had returned false');
+            this.trigger('debug', 'Rendering of view "' + this.className + '" was stopped, because onBeforeRender() method has returned false');
             return this;
         }
         this.callParent(arguments);
@@ -337,13 +337,13 @@ N13.define('App.view.base.View', {
         var len;
 
         if (!this.rendered) {
-            this.trigger('debug', 'Method clear() was called, but view "' + this.className + '" had not rendered');
+            this.trigger('debug', 'Method clear() was called, but view "' + this.className + '" has not rendered');
             return false;
         }
 
         this.trigger('beforeclear');
         if (this.onBeforeClear() === false) {
-            this.trigger('debug', 'Clearing of view "' + this.className + '" was stopped, because onBeforeClear() method had returned false');
+            this.trigger('debug', 'Clearing of view "' + this.className + '" was stopped, because onBeforeClear() method has returned false');
             return false;
         }
         if (N13.isArray(items)) {

@@ -59,6 +59,7 @@ N13.define('App.mixin.view.Show', {
     /**
      * Shows current and all nested views. It uses display: xxx css property for that.
      * show() method will be called for all nested views also.
+     * @return {Boolean} true If current view was showed, false - otherwice
      */
     show: function () {
         var items = this.items;
@@ -66,12 +67,14 @@ N13.define('App.mixin.view.Show', {
         var len;
 
         if (!this.rendered) {
-            return;
+            this.trigger('debug', 'show() method was called, but view "' + this.className + '" has not rendered yet.');
+            return false;
         }
 
         this.trigger('beforeshow');
-        if (this.onBeforeShow()) {
-            return;
+        if (this.onBeforeShow() === false) {
+            this.trigger('debug', 'Showing of view "' + this.className + '" was stopped, because onBeforeShow() method has returned false');
+            return false;
         }
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
@@ -81,10 +84,13 @@ N13.define('App.mixin.view.Show', {
         this.el.css('display', 'block');
         this.onAfterShow();
         this.trigger('show');
+
+        return true;
     },
 
     /**
      * Hides current and all nested views. It uses display: none; css property for that.
+     * @return {Boolean} true If current view was showed, false - otherwice
      */
     hide: function () {
         var items = this.items;
@@ -92,12 +98,14 @@ N13.define('App.mixin.view.Show', {
         var len;
 
         if (!this.rendered) {
-            return;
+            this.trigger('debug', 'hide() method was called, but view "' + this.className + '" has not rendered yet.');
+            return false;
         }
 
         this.trigger('beforehide');
         if (this.onBeforeHide() === false) {
-            return;
+            this.trigger('debug', 'Hiding of view "' + this.className + '" was stopped, because onBeforeHide() method has returned false');
+            return false;
         }
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
@@ -107,5 +115,7 @@ N13.define('App.mixin.view.Show', {
         this.el.css('display', 'none');
         this.onAfterHide();
         this.trigger('hide');
+
+        return true;
     }
 });

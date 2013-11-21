@@ -17,6 +17,8 @@ load:
 
   - ../js/mixin/Interface.js
   - ../js/mixin/Observer.js
+  - ../js/mixin/view/Enable.js
+  - ../js/mixin/view/Show.js
   - ../js/template/Button.js
   - ../js/template/player/Container.js
   - ../js/view/base/View.js
