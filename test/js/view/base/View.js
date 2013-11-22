@@ -2,7 +2,7 @@
 
 // TODO: add tests for onBeforeXXX() and onAfterXXX() methods
 
-AsyncTestCase("view.base.View", {
+AsyncTestCase("App.view.base.View", {
     /**
      * This function calls every time before test starts and creates empty container for current view
      */
@@ -405,15 +405,14 @@ AsyncTestCase("view.base.View", {
     /*
      * Tests base view creation and init() method call
      */
-    testInitMethod: function () {
+    testInitMethod1: function () {
         var view1;
         var view2;
         var res = 0;
         var bi  = function () {res++;};
-        var i   = function () {res++;};
 
         assertNoException('base.View class should be created without configuration', function () {
-            view1 = new App.view.base.View({listeners: {beforeinit: bi, init: i}});
+            view1 = new App.view.base.View({listeners: {beforeinit: bi, init: bi}});
             view2 = new App.view.base.View();
 
             assertObject('First base.View has created', view1);
@@ -425,6 +424,30 @@ AsyncTestCase("view.base.View", {
             view1.init();
             view1.destroy();
             view2.destroy();
+        });
+    },
+    /*
+     * Tests base view creation and init() method call twice or more
+     */
+    testInitMethod2: function () {
+        var view;
+        var res = 0;
+        var bi  = function () {res++;};
+
+        assertNoException('base.View class should be created without configuration', function () {
+            view = new App.view.base.View({listeners: {beforeinit: bi, init: bi}});
+
+            assertObject('First base.View has created', view);
+            assertTrue('init() method should be called', res === 2);
+            view.init();
+            assertTrue('init() method should be called', res === 2);
+            view.destroy();
+            // Nothing should happen
+            view.init();
+            assertTrue('init() method shouldn\'t be called', res === 2);
+            view.destroy();
+            view.init();
+            assertTrue('init() method shouldn\'t be called', res === 2);
         });
     },
 

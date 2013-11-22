@@ -379,6 +379,10 @@ N13.define('App.view.base.View', {
             this.trigger('debug', 'destroy() method is called twice or more in class "' + this.className + '"');
             return false;
         }
+        if (!this._inited) {
+            this.trigger('debug', 'destroy() method is called in class "' + this.className + '", which was not initialized (created)');
+            return false;
+        }
 
         this.trigger('beforedestroy', this);
         if (this.onBeforeDestroy() === false) {

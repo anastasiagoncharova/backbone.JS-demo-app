@@ -14,13 +14,18 @@ load:
   - ../lib/jquery-1.9.1.js
   - ../lib/backbone.js
   - ../lib/n13/src/n13.js
-
+  # Mixins section
   - ../js/mixin/Interface.js
   - ../js/mixin/Observer.js
   - ../js/mixin/view/Enable.js
   - ../js/mixin/view/Show.js
+  - ../js/mixin/controller/View.js
+  - ../js/mixin/controller/Controller.js
+  # Templates section
   - ../js/template/Button.js
   - ../js/template/player/Container.js
+  # Base classes section
+  - ../js/controller/base/Controller.js
   - ../js/view/base/View.js
 
 #
@@ -29,6 +34,7 @@ load:
 test:
   - js/util/Common.js
   - js/view/base/View.js
+  - js/controller/base/Controller.js
 
 #
 # Server settings

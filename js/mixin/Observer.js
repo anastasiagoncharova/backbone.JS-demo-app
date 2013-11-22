@@ -48,6 +48,13 @@ N13.define('App.mixin.Observer', {
          */
         this._listeners = [];
 
+        //
+        // This mixin works only with Backbone.Events object, so we
+        // need to copy it into current class, if it doesn't contains it.
+        //
+        if (!isFunction(this.trigger)) {
+            $.extend(this, Backbone.Events);
+        }
         if (!N13.isObject(listeners)) {
             this.trigger('error', 'Invalid listeners configuration in class: "' + this.className + '"');
             return;

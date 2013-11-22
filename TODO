@@ -6,3 +6,5 @@
 - Fix cache property
   view by alias in nested views too. Also we need to add #id and [index]
 - Describe autoRun for sub controllers and the issue about it's views
+- Add router description
+- Add application and controllers relations description

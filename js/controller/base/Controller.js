@@ -17,7 +17,7 @@
  *         configs : {view: 'my.MainView'},               // This is how we are creating the view. It should be with autoRender: true config
  *
  *         onAfterInit: function () {                     // Here we may bind event handlers to views
- *             this.findView('my.MainView').on(           // Add ready event handler
+ *             this.findView('my.MainView').listen(       // Add ready event handler
  *                 'ready',
  *                 this._onReady,
  *                 this
@@ -93,10 +93,19 @@ N13.define('App.controller.base.Controller', {
      */
     initPrivates: function () {
         /**
+         * {Boolean} Means that init() method was called or not. It must be called only once.
+         * @private
+         */
+        this._inited    = false;
+        /**
+         * {Boolean} Means that destroyed instance mustn't be destroyed twice or more
+         */
+        this._destroyed = false;
+        /**
          * {Boolean} will be true after run() method will be run.
          * @private
          */
-        this._running = false;
+        this._running   = false;
     },
 
     /**
@@ -104,54 +113,98 @@ N13.define('App.controller.base.Controller', {
      * Run init() method for all controller related mixins. See App.mixin.controller.* for details
      */
     init: function () {
+        if (this._inited) {
+            //noinspection JSUnresolvedVariable,JSUnresolvedFunction
+            this.trigger('debug', 'init() method is called twice or more in class "' + this.className + '"');
+            return;
+        }
+
         this.callMixin('iface');
+        this.callMixin('observe');
+        this.trigger('beforeinit');
         this.onBeforeInit();
         //
         // Method init() will be called for all mixins of this class
         //
-        this._callMethodFromMixins('init');
+        this._callFromMixins('init');
         if (this.autoRun) {
             this.run();
         }
         this.onAfterInit();
+        this.trigger('init');
     },
 
     /**
      * This method will be called when controller is ready to do main job - create views, models and collections
+     * @returns {Boolean} true if it run was done, false - if not.
      */
     run: function () {
-        if (this._running || this.onBeforeRun() === false) {
-            return;
+        if (this._running) {
+            this.trigger('debug', 'Method run() was called, but controller "' + this.className + '" has already run');
+            return false;
         }
 
+        this.trigger('beforerun');
+        if (this.onBeforeRun() === false) {
+            this.trigger('debug', 'Running of controller "' + this.className + '" was stopped, because onBeforeRun() method has returned false');
+            return false;
+        }
         this._running = true;
         this.onAfterRun();
+        this.trigger('run');
+
+        return true;
     },
 
     /**
      * Calls before controller will stop. All event handler will be unbind here automatically
+     * @returns {Boolean} true if controller was stopped, false - otherwise
      */
     stop: function () {
-        if (!this._running || this.onBeforeStop() === false) {
-            return;
+        if (!this._running) {
+            this.trigger('debug', 'Method stop() was called, but controller "' + this.className + '" has already stopped');
+            return false;
         }
 
+        this.trigger('beforestop');
+        if (this.onBeforeStop() === false) {
+            this.trigger('debug', 'Stopping of controller "' + this.className + '" was stopped, because onBeforeStop() method has returned false');
+            return false;
+        }
         this.callMixin('observe');
         this._running = false;
         this.onAfterStop();
+
+        return true;
     },
 
     /**
      * Destroys a controller. Can be used as a destructor. Removes the view.
+     * @return {App.controller.base.Controller|Boolean} this or false
      */
     destroy: function () {
+        if (this._destroyed) {
+            this.trigger('debug', 'destroy() method is called twice or more in class "' + this.className + '"');
+            return false;
+        }
+        if (!this._inited) {
+            this.trigger('debug', 'destroy() method is called in class "' + this.className + '", which was not initialized (created)');
+            return false;
+        }
+
+        this.trigger('beforedestroy', this);
         if (this.onBeforeDestroy() === false) {
-            return;
+            this.trigger('debug', 'Destroying of view "' + this.className + '" was stopped, because onBeforeDestroy() method has returned false');
+            return false;
         }
         //
         // Method destroy() will be called from all mixins of this class
         //
-        this._callMethodFromMixins('destroy');
+        this._callFromMixins('destroy');
+        this.onAfterDestroy();
+        this.trigger('destroy');
+
+        return this;
     },
 
 
@@ -162,7 +215,7 @@ N13.define('App.controller.base.Controller', {
      * we should skip calling of specified method
      * @private
      */
-    _callMethodFromMixins: function (method, except) {
+    _callFromMixins: function (method, except) {
         var mixin;
         var mixins     = this.mixins;
         var exceptions = N13.isArray(except) ? except : N13.isString(except) ? [except] : [];
