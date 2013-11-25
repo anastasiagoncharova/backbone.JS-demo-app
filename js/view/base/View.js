@@ -249,7 +249,7 @@ N13.define('App.view.base.View', {
 
         this.trigger('beforeinit', this);
         this.onBeforeInit();
-        this._createItems();
+        this.onInit();
         this.onAfterInit();
         this.trigger('init');
         this._inited = true;
@@ -261,6 +261,14 @@ N13.define('App.view.base.View', {
     },
 
     /**
+     * This method is called between onBeforeInit() and onAfterInit() and used for main initialization logic.
+     * It also, may be overridden in child classes
+     */
+    onInit: function () {
+        this._createItems();
+    },
+
+    /**
      * @override
      * Renders current view and all nested views. You can prevent rendering in child class, if onBeforeRender()
      * method will return false.
@@ -268,9 +276,7 @@ N13.define('App.view.base.View', {
      * @returns {Boolean|Object} true if view was rendered, this - otherwise
      */
     render: function (containerQuery) {
-        var Tpl      = N13.ns(this.templateNs + '.' + this.template, false) || {};
         var dataProp = this.templateDataProp;
-        var tplData;
 
         if (!N13.isString(dataProp) || dataProp === '') {
             this.trigger('error', 'Data property is invalid. Not empty string is required. See templateDataProp config for details. Class: "' + this.className + '"');
@@ -302,9 +308,28 @@ N13.define('App.view.base.View', {
         this.trigger('beforerender', this);
         if (this.onBeforeRender(this.el) === false) {
             this.trigger('debug', 'Rendering of view "' + this.className + '" was stopped, because onBeforeRender() method has returned false');
-            return this;
+            return false;
         }
         this.callParent(arguments);
+        if (!this.onRender()) {
+            return false;
+        }
+        this.onAfterRender(this.el);
+        this.trigger('render', this);
+
+        return this;
+    },
+
+    /**
+     * Calls between onBeforeRender() and onAfterRender() methods. Is used for main render logic.
+     * You may override this method in child classes
+     * @returns {Boolean}
+     */
+    onRender: function () {
+        var Tpl      = N13.ns(this.templateNs + '.' + this.template, false) || {};
+        var dataProp = this.templateDataProp;
+        var tplData;
+
         this.clear();
         tplData = Tpl[dataProp];
         if (tplData === '' || !N13.isString(tplData) || !N13.isObject(this[dataProp]) && this[dataProp] !== null) {
@@ -319,10 +344,8 @@ N13.define('App.view.base.View', {
         }
         this._renderItems();
         this.rendered = true;
-        this.onAfterRender(this.el);
-        this.trigger('render', this);
 
-        return this;
+        return true;
     },
 
     /**
@@ -331,11 +354,6 @@ N13.define('App.view.base.View', {
      * @return {App.view.base.View|Boolean} this or false
      */
     clear: function () {
-        var items = this.items;
-        var children;
-        var i;
-        var len;
-
         if (!this.rendered) {
             this.trigger('debug', 'Method clear() was called, but view "' + this.className + '" has not rendered');
             return false;
@@ -346,6 +364,23 @@ N13.define('App.view.base.View', {
             this.trigger('debug', 'Clearing of view "' + this.className + '" was stopped, because onBeforeClear() method has returned false');
             return false;
         }
+        this.onClear();
+        this.onAfterClear();
+        this.trigger('clear');
+
+        return this;
+    },
+
+    /**
+     * Calls between onBeforeClear() and onAfterClear(). Is used for main
+     * clear logic and may be overridden in child classes.
+     */
+    onClear: function () {
+        var items = this.items;
+        var children;
+        var i;
+        var len;
+
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
                 //
@@ -359,10 +394,6 @@ N13.define('App.view.base.View', {
         children.off();
         children.remove();
         this.rendered = false;
-        this.onAfterClear();
-        this.trigger('clear');
-
-        return this;
     },
 
     /**
@@ -371,10 +402,6 @@ N13.define('App.view.base.View', {
      * @return {App.view.base.View|Boolean} this or false
      */
     destroy: function () {
-        var items = this.items;
-        var i;
-        var len;
-
         if (this._destroyed) {
             this.trigger('debug', 'destroy() method is called twice or more in class "' + this.className + '"');
             return false;
@@ -390,6 +417,23 @@ N13.define('App.view.base.View', {
             return false;
         }
         this.callMixin('observe');
+        this.onDestroy();
+        this.onAfterDestroy();
+        this.trigger('destroy');
+        this._destroyed = true;
+
+        return this;
+    },
+
+    /**
+     * Calls between onBeforeDestroy() and onAfterDestroy(). Is used for main
+     * destroy logic and may be overridden in child classes.
+     */
+    onDestroy: function () {
+        var items = this.items;
+        var i;
+        var len;
+
         //
         // We should clear the DOM before we clears the instances
         //
@@ -408,11 +452,6 @@ N13.define('App.view.base.View', {
         // otherwise we'll get memory leaks and multiply events callings
         //
         this.undelegateEvents();
-        this.onAfterDestroy();
-        this.trigger('destroy');
-        this._destroyed = true;
-
-        return this;
     },
 
 
