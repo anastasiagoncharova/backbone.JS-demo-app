@@ -11,6 +11,12 @@
  *    Later, the application will apply unique ids for this views and this.el properties will be pointed to this ids.
  *    It means, that it will be unique for all sub view instances.
  *
+ * You should know about common algorithm, which is used in these classes. We use onBeforeXXX() -> onXXX() -> onAfterXXX()
+ * methods for every special action. For example, rendering: onBeforeRender() -> onRender() -> onAfterRender(). These
+ * method may be used for creating of your custom logic. If onBeforeXXX() returns false, then onXXX() and onAfterXXX()
+ * methods will be skipped. onXXX() method is used for central (main) logic. In case of rendering it may be core
+ * render process (applying template, DOM creation and so on...).
+ *
  * Also, you may need for some additional functionality. For example: show/hide or enable/disable view. For this, we
  * have special mixins in App.mixin.view.* namespace. See them for details.
  *

@@ -8,3 +8,4 @@
 - Describe autoRun for sub controllers and the issue about it's views
 - Add router description
 - Add application and controllers relations description
+- Add onXXX() method. For example: Controller::onRun() or View::onRender()

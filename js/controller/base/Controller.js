@@ -86,6 +86,11 @@ N13.define('App.controller.base.Controller', {
      * Calls after controller stops.
      */
     onAfterDestroy: N13.emptyFn,
+    /**
+     * @interface
+     * Is used for main destroy logic. Calls after onBeforeDestroy() and after onAfterDestroy() methods
+     */
+    onDestroy: N13.emptyFn,
 
 
     /**
@@ -127,11 +132,19 @@ N13.define('App.controller.base.Controller', {
         // Method init() will be called for all mixins of this class
         //
         this._callFromMixins('init');
+        this.onInit();
+        this.onAfterInit();
+        this.trigger('init');
+    },
+
+    /**
+     * Is used for main initialization logic. Calls after onBeforeInit() and before onAfterInit() methods. May
+     * be overridden in child classes
+     */
+    onInit: function () {
         if (this.autoRun) {
             this.run();
         }
-        this.onAfterInit();
-        this.trigger('init');
     },
 
     /**
@@ -149,11 +162,19 @@ N13.define('App.controller.base.Controller', {
             this.trigger('debug', 'Running of controller "' + this.className + '" was stopped, because onBeforeRun() method has returned false');
             return false;
         }
-        this._running = true;
+        this.onRun();
         this.onAfterRun();
         this.trigger('run');
 
         return true;
+    },
+
+    /**
+     * Is used for main running logic. Calls after onBeforeInit() and
+     * before onAfterInit() methods. May be overridden in child classes.
+     */
+    onRun: function () {
+        this._running = true;
     },
 
     /**
@@ -172,10 +193,18 @@ N13.define('App.controller.base.Controller', {
             return false;
         }
         this.callMixin('observe');
-        this._running = false;
+        this.onStop();
         this.onAfterStop();
 
         return true;
+    },
+
+    /**
+     * Is used for central controller stop logic. Calls after onBeforeInit() and
+     * before onAfterInit() methods. May be overridden in child classes.
+     */
+    onStop: function () {
+        this._running = false;
     },
 
     /**
@@ -201,6 +230,7 @@ N13.define('App.controller.base.Controller', {
         // Method destroy() will be called from all mixins of this class
         //
         this._callFromMixins('destroy');
+        this.onDestroy();
         this.onAfterDestroy();
         this.trigger('destroy');
 
