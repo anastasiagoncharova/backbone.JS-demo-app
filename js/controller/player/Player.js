@@ -73,18 +73,26 @@ N13.define('App.controller.player.Player', {
      * After binding all event handlers and after creation of all nested
      * controllers we should render main view
      */
-    onAfterRun: function () {
-        (this._playlistGrid = this.findView('player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
-        (this._controlPanel = this.findView('player.ControlPanel')).on('played', this._onTrackPlayed, this);
-
+    onBeforeRun: function () {
         //
         // We need to set tracks collection to the playlist grid and render
         // main container after that. So, tracks collection will be used in rendering.
         //
         this._playlistGrid.setConfig({tracks: this._tracks});
         this.findView('player.Container').render();
+
+        (this._playlistGrid = this.findView('player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
+        (this._controlPanel = this.findView('player.ControlPanel')).on('played', this._onTrackPlayed, this);
+    },
+
+    /**
+     * Runs nested controllers
+     */
+    onRun: function () {
+        this.callParent();
         this.runControllers();
     },
+
 
     /**
      * 'selected' event handler. Get active Track model and run this track by ControlPanel view.
