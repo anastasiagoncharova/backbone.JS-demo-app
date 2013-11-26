@@ -74,15 +74,15 @@ N13.define('App.controller.player.Player', {
      * controllers we should render main view
      */
     onBeforeRun: function () {
+        (this._playlistGrid = this.findView('player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
+        (this._controlPanel = this.findView('player.ControlPanel')).on('played', this._onTrackPlayed, this);
+
         //
         // We need to set tracks collection to the playlist grid and render
         // main container after that. So, tracks collection will be used in rendering.
         //
         this._playlistGrid.setConfig({tracks: this._tracks});
         this.findView('player.Container').render();
-
-        (this._playlistGrid = this.findView('player.PlaylistGrid')).on('selected', this._onTrackSelect, this);
-        (this._controlPanel = this.findView('player.ControlPanel')).on('played', this._onTrackPlayed, this);
     },
 
     /**
