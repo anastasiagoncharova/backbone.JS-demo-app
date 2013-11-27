@@ -62,10 +62,6 @@ N13.define('App.mixin.view.Show', {
      * @return {Boolean} true If current view was showed, false - otherwice
      */
     show: function () {
-        var items = this.items;
-        var i;
-        var len;
-
         if (!this.rendered) {
             this.trigger('debug', 'show() method was called, but view "' + this.className + '" has not rendered yet.');
             return false;
@@ -76,12 +72,7 @@ N13.define('App.mixin.view.Show', {
             this.trigger('debug', 'Showing of view "' + this.className + '" was stopped, because onBeforeShow() method has returned false');
             return false;
         }
-        if (N13.isArray(items)) {
-            for (i = 0, len = items.length; i < len; i++) {
-                items[i].show();
-            }
-        }
-        this.el.css('display', 'block');
+        this.onShow();
         this.onAfterShow();
         this.trigger('show');
 
@@ -89,14 +80,27 @@ N13.define('App.mixin.view.Show', {
     },
 
     /**
-     * Hides current and all nested views. It uses display: none; css property for that.
-     * @return {Boolean} true If current view was showed, false - otherwice
+     * Calls after onBeforeShow() and before onAfterShow() methods. Is used for main showing logic
+     * and may be overridden in child classes. Don't forget to call callParent() in child method.
      */
-    hide: function () {
+    onShow: function () {
         var items = this.items;
         var i;
         var len;
 
+        if (N13.isArray(items)) {
+            for (i = 0, len = items.length; i < len; i++) {
+                items[i].show();
+            }
+        }
+        this.el.css('display', 'block');
+    },
+
+    /**
+     * Hides current and all nested views. It uses display: none; css property for that.
+     * @return {Boolean} true If current view was showed, false - otherwice
+     */
+    hide: function () {
         if (!this.rendered) {
             this.trigger('debug', 'hide() method was called, but view "' + this.className + '" has not rendered yet.');
             return false;
@@ -107,15 +111,27 @@ N13.define('App.mixin.view.Show', {
             this.trigger('debug', 'Hiding of view "' + this.className + '" was stopped, because onBeforeHide() method has returned false');
             return false;
         }
+        this.onHide();
+        this.onAfterHide();
+        this.trigger('hide');
+
+        return true;
+    },
+
+    /**
+     * Calls after onBeforeHide() and before onAfterHide() methods. Is used for main hiding logic
+     * and may be overridden in child classes. Don't forget to call callParent() in child method.
+     */
+    onHide: function () {
+        var items = this.items;
+        var i;
+        var len;
+
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
                 items[i].hide();
             }
         }
         this.el.css('display', 'none');
-        this.onAfterHide();
-        this.trigger('hide');
-
-        return true;
     }
 });

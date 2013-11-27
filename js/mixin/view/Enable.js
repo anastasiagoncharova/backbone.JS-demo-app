@@ -70,10 +70,6 @@ N13.define('App.mixin.view.Enable', {
      * @returns {Boolean} true if enabling has finished fine, false - otherwice
      */
     enable: function () {
-        var items = this.items;
-        var i;
-        var len;
-
         if (!this.rendered) {
             this.trigger('debug', 'enable() method was called, but view "' + this.className + '" has not rendered yet.');
             return false;
@@ -84,12 +80,7 @@ N13.define('App.mixin.view.Enable', {
             this.trigger('debug', 'Enabling of view "' + this.className + '" was stopped, because onBeforeEnable() method has returned false');
             return false;
         }
-        this.el.removeClass(this.disableCls);
-        if (N13.isArray(items)) {
-            for (i = 0, len = items.length; i < len; i++) {
-                items[i].enable();
-            }
-        }
+        this.onEnable();
         this.onAfterEnable();
         this.trigger('enable');
 
@@ -97,14 +88,27 @@ N13.define('App.mixin.view.Enable', {
     },
 
     /**
-     * Disables current and all nested views. It also adds 'disabled' class for all nested views.
-     * @returns {Boolean} true if disabling has finished fine, false - otherwice
+     * Calls after onBeforeEnable() and before onAfterEnable() methods. Is used for main enabling logic
+     * and may be overridden in child classes. Don't forget to call callParent() in child method.
      */
-    disable: function () {
+    onEnable: function () {
         var items = this.items;
         var i;
         var len;
 
+        this.el.removeClass(this.disableCls);
+        if (N13.isArray(items)) {
+            for (i = 0, len = items.length; i < len; i++) {
+                items[i].enable();
+            }
+        }
+    },
+
+    /**
+     * Disables current and all nested views. It also adds 'disabled' class for all nested views.
+     * @returns {Boolean} true if disabling has finished fine, false - otherwice
+     */
+    disable: function () {
         if (!this.rendered) {
             this.trigger('debug', 'disable() method was called, but view "' + this.className + '" has not rendered yet.');
             return false;
@@ -115,15 +119,27 @@ N13.define('App.mixin.view.Enable', {
             this.trigger('debug', 'Disabling of view "' + this.className + '" was stopped, because onBeforeDisable() method has returned false');
             return false;
         }
+        this.onDisable();
+        this.onAfterDisable();
+        this.trigger('disable');
+
+        return true;
+    },
+
+    /**
+     * Calls after onBeforeDisable() and before onAfterDisable() methods. Is used for main disabling logic
+     * and may be overridden in child classes. Don't forget to call callParent() in child method.
+     */
+    onDisable: function () {
+        var items = this.items;
+        var i;
+        var len;
+
         this.el.addClass(this.disableCls);
         if (N13.isArray(items)) {
             for (i = 0, len = items.length; i < len; i++) {
                 items[i].disable();
             }
         }
-        this.onAfterDisable();
-        this.trigger('disable');
-
-        return true;
     }
 });
