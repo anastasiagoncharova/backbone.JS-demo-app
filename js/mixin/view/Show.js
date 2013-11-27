@@ -80,7 +80,7 @@ N13.define('App.mixin.view.Show', {
     },
 
     /**
-     * Calls after onBeforeShow() and before onAfterShow() methods. Is used for main showing logic
+     * Calls after onBeforeDisable() and before onAfterShow() methods. Is used for main showing logic
      * and may be overridden in child classes. Don't forget to call callParent() in child method.
      */
     onShow: function () {

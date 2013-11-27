@@ -30,5 +30,14 @@ AsyncTestCase("App.controller.base.Controller", {
         var ctrl = new App.controller.base.Controller({autoRun: true, listeners: {run: function () {res = true;}}});
         assertTrue('Controller should run with autoRun set to true', res === true);
         ctrl.destroy();
+    },
+
+    testInitMethod: function () {
+        var res  = false;
+        var ctrl = new App.controller.base.Controller({listeners: {
+            init: function () {res = true;}
+        }});
+
+        assertTrue('Controller should create itself without bugs', res === true);
     }
 });
