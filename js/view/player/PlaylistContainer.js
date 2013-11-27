@@ -14,8 +14,8 @@ N13.define('App.view.player.PlaylistContainer', {
         template: 'player.PlaylistContainer',
         items   : [
             'player.PlaylistGrid', {
-                cl              : 'Button',
-                title           : 'Add'
+                cl   : 'Button',
+                title: 'Add'
             }
         ]
     }
