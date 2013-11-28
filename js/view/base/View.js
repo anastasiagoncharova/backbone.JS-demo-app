@@ -261,7 +261,7 @@ N13.define('App.view.base.View', {
         this._inited = true;
 
         //noinspection JSUnresolvedVariable
-        if (this.autoRender) {
+        if (this.autoRender === true) {
             this.render();
         }
     },

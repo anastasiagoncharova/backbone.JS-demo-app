@@ -31,6 +31,19 @@ AsyncTestCase("App.controller.base.Controller", {
         assertTrue('Controller should run with autoRun set to true', res === true);
         ctrl.destroy();
     },
+    testInvalidAutoRunConfig: function () {
+        var ctrl;
+        var res;
+
+        App.test.util.Common.mapValues(function (val) {
+            assertNoException('Controller shouldn\'t throw an exception', function () {
+                res = false;
+                ctrl = new App.controller.base.Controller({autoRun: val, listeners: {run: function () {res = true;}}});
+                assertTrue('Controller shouldn\'t be created with invalid autoRun config', res === false);
+                ctrl.destroy();
+            });
+        }, ['boolTrue']);
+    },
 
     testInitMethod: function () {
         var res  = false;

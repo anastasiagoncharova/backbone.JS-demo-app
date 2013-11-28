@@ -381,6 +381,9 @@ AsyncTestCase("App.view.base.View", {
      * Checks if autoRender config works with invalid values
      */
     testInvalidAutoRenderConfig: function () {
+        var view;
+        var res;
+
         N13.define('App.view.temp.Button', {
             extend : 'App.view.base.View',
             configs: {
@@ -392,9 +395,12 @@ AsyncTestCase("App.view.base.View", {
 
         App.test.util.Common.mapValues(function (val) {
             assertNoException('View should fail if items configuration is invalid', function () {
-                (new App.view.temp.Button({autoRender: val})).destroy();
+                res = false;
+                view = new App.view.temp.Button({autoRender: val, listeners: {render: function () {res = true;}}});
+                assertTrue('View shouldn\'t render with invalid autoRender config', res === false);
+                view.destroy();
             });
-        }, ['nil', 'emptyArray']);
+        }, ['boolTrue']);
     },
 
 

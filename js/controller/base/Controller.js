@@ -142,7 +142,7 @@ N13.define('App.controller.base.Controller', {
      * be overridden in child classes
      */
     onInit: function () {
-        if (this.autoRun) {
+        if (this.autoRun === true) {
             this.run();
         }
     },
