@@ -56,24 +56,24 @@ N13.define('App.mixin.controller.View', {
         var view;
         var View;
 
-        //
-        // view parameter must be set from outside by setConfig({view: App.view.ase.View})
-        //
-        if (this.noView) {
-            return;
-        }
-
-        /**
-         * {String=} This field contains normalized view query. For example: 'view1 > view2' -> 'view1>view2'
-         */
-        this.normalViewQuery = null;
 
         /**
          * {RegEx} String left+right trimming regular expression.
          * @private
          */
         this._trimRe         = /^\s+|\s+$/g;
+        /**
+         * {RegEx} One views query node format. For example: 'view1 > view2[2] > view3#id-12'
+         * @private
+         */
+        this._queryNodeRe    = /^([a-zA-Z0-9.]+)((\[([0-9]+)\])|(#([a-zA-Z0-9\-]+)))?$/;
 
+        //
+        // view parameter must be set from outside by setConfig({view: App.view.ase.View})
+        //
+        if (this.noView) {
+            return;
+        }
         /**
          * @type {{cl: String}|String} The string class name or it's configuration
          */
@@ -88,6 +88,19 @@ N13.define('App.mixin.controller.View', {
         if (View) {
             this.view = new View(cfg);
         }
+    },
+
+    /**
+     * Destroys a view related logic from the controller. This is an analog of a destructor.
+     * In case of noView configuration parameter is set to true, then destroy will be skipped.
+     */
+    destroy: function () {
+        if (!this.view instanceof Backbone.View || this.noView) {
+            return;
+        }
+
+        this.view.destroy();
+        this.view = null;
     },
 
     /**
@@ -108,22 +121,26 @@ N13.define('App.mixin.controller.View', {
         if (!me.view || !N13.isString(query) || query === '') {
             return null;
         }
-        queryArr = _.map(query.split('>'), function (q) {return q.replace(me._trimRe, '');});
-        me.normalViewQuery = queryArr.join('>');
+        queryArr = _.map(query.split('>'), function (q) {
+            var parts = me._queryNodeRe.exec(q.replace(me._trimRe, ''));
+
+            if (!parts) {
+                return {index: 0};
+            }
+            //
+            // For example query: 'view1[1] > view2#myId' has these parts:
+            // 'view1', 'view2' - alias
+            // 1                - index
+            // 'myId'           - id
+            //
+            return {
+                alias: parts[1],
+                index: +parts[4],
+                id   : parts[6]
+            };
+        });
 
         return me._findView(queryArr, [me.view]);
-    },
-    /**
-     * Destroys a view related logic from the controller. This is an analog of a destructor.
-     * In case of noView configuration parameter is set to true, then destroy will be skipped.
-     */
-    destroy: function () {
-        if (!this.view instanceof Backbone.View || this.noView) {
-            return;
-        }
-
-        this.view.destroy();
-        this.view = null;
     },
 
 
@@ -145,25 +162,30 @@ N13.define('App.mixin.controller.View', {
         var viewAlias  = query[0] || null;
         var classNsLen = this.viewNs.length + 1;
         var view;
+        var index;
         var i;
         var len;
+        var id;
 
-        if (viewAlias && views) {
+        if (viewAlias.alias && views) {
             for (i = 0, len = views.length; i < len; i++) {
+                view  = views[i];
+                id    = viewAlias.id    || view.id;
+                index = viewAlias.index || i;
                 //
                 // 'App.view.my.Widget' -> 'my.Widget'
                 //
-                if (views[i].className.substr(classNsLen) === viewAlias) {
+                if (view.className.substr(classNsLen) === viewAlias.alias && view.id === id && i === index) {
                     query.shift();
                     if (!query.length) {
-                        return views[i];
+                        return view;
                     }
                 }
                 //
                 // HACK: query.concat() without arguments, creates array copy. We need a copy every
                 // HACK: time we appear inside this method
                 //
-                if ((view = this._findView(query.concat(), views[i].items))) {
+                if ((view = this._findView(query.concat(), view.items))) {
                     return view;
                 }
             }
