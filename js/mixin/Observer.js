@@ -87,7 +87,7 @@ N13.define('App.mixin.Observer', {
         if (this._listeners.indexOf(obj) === -1) {
             this._listeners.push(obj);
         }
-        obj.on(event, fn, scope);
+        obj.on(event, _.bind(fn, scope));
     },
 
     /**

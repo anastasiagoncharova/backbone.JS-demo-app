@@ -46,11 +46,15 @@ AsyncTestCase("App.controller.base.Controller", {
     },
 
     testInitMethod: function () {
-        var res  = false;
+        var res  = 0;
+        var cb   = function () {
+            res++;
+        };
         var ctrl = new App.controller.base.Controller({listeners: {
-            init: function () {res = true;}
+            beforeinit: cb,
+            init      : cb
         }});
 
-        assertTrue('Controller should create itself without bugs', res === true && N13.isObject(ctrl));
+        assertTrue('Controller should create itself without bugs', res === 2 && N13.isObject(ctrl));
     }
 });

@@ -40,7 +40,13 @@ N13.define('App.controller.base.Controller', {
         /**
          * {Boolean} true if we want to run current controller in the constructor
          */
-        autoRun: false
+        autoRun    : false,
+        /**
+         * {String} First part of the namespace for controller mixins without dot at the end.
+         * It's used for determining if current mixin is related to the controller class or not.
+         * If so, we should run it's methods in _callFromMixins() method. Skip otherwise.
+         */
+        ctrlMixinNs: 'App.mixin.controller'
     },
 
 
@@ -242,18 +248,19 @@ N13.define('App.controller.base.Controller', {
      * Calls specified method in each mixin excepting mixins from except argument
      * @param {String} method Name of the method
      * @param {Array|String=} except Array of class names or class name for which
-     * we should skip calling of specified method
+     * we should skip calling of specified method. Example ['ctrl', 'view']
      * @private
      */
     _callFromMixins: function (method, except) {
-        var mixin;
         var mixins     = this.mixins;
         var exceptions = N13.isArray(except) ? except : N13.isString(except) ? [except] : [];
         var isFunction = N13.isFunction;
+        var mixNs      = this.ctrlMixinNs;
+        var mixin;
 
         for (mixin in mixins) {
             if (mixins.hasOwnProperty(mixin)) {
-                if (exceptions.indexOf(mixin) === -1) {
+                if (exceptions.indexOf(mixin) === -1 && mixins[mixin].childNs === mixNs) {
                     //
                     // This is a small hack. this.callMixin() method doesn't work here, because
                     // it can't resolve in which class callMixin() method is called. This method
