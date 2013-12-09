@@ -63,7 +63,7 @@ AsyncTestCase("App.view.base.View", {
     testNormalTemplateConfigWithElPath2: function () {
         var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer'});
 
-        view.setConfig({data: {title: 'Test'}});
+        view.setConfig({data: {title: 'Test', cls: 'cl'}});
         view.render();
         assertTrue('View\'s DOM should be created', this.ct.children().length > 0);
         view.destroy();
@@ -184,7 +184,7 @@ AsyncTestCase("App.view.base.View", {
     testAutoElPathConfig: function () {
         var view = new App.view.base.View({template: 'Button'});
 
-        view.setConfig({data: {title: 'Test'}});
+        view.setConfig({data: {title: 'Test', cls: 'cl'}});
         view.render('#viewContainer');
         assertTrue('View\'s DOM should be created', this.ct.children().length > 0);
         view.destroy();
@@ -215,7 +215,7 @@ AsyncTestCase("App.view.base.View", {
     testEmptyItemsConfig1: function () {
         var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: []});
 
-        view.setConfig({data: {title: 'Test'}});
+        view.setConfig({data: {title: 'Test', cls: 'cl'}});
         assertObject('View without sub items should be rendered', view.render());
         view.destroy();
     },
@@ -225,7 +225,7 @@ AsyncTestCase("App.view.base.View", {
     testEmptyItemsConfig2: function () {
         var view = new App.view.base.View({template: 'Button', elPath: '#viewContainer', items: null});
 
-        view.setConfig({data: {title: 'Test'}});
+        view.setConfig({data: {title: 'Test', cls: 'cl'}});
         assertObject('View without sub items should be rendered', view.render());
         view.destroy();
     },
@@ -300,7 +300,7 @@ AsyncTestCase("App.view.base.View", {
             configs: {
                 elPath  : 'autoInsert',
                 template: 'Button',
-                data    : {title: 'test'}
+                data    : {title: 'test', cls: 'cl'}
             }
         });
 
@@ -368,7 +368,7 @@ AsyncTestCase("App.view.base.View", {
                 template  : 'Button',
                 elPath    : '#viewContainer',
                 autoRender: true,
-                data      : {title: 'Test'}
+                data      : {title: 'Test', cls: 'cl'}
             }
         });
 
@@ -528,7 +528,7 @@ AsyncTestCase("App.view.base.View", {
             mixins : {show: 'App.mixin.view.Show'},
             configs: {
                 template    : 'Button',
-                data        : {title: 'Test'},
+                data        : {title: 'Test', cls: 'cl'},
                 onBeforeShow: cb,
                 onAfterShow : cb,
                 onBeforeHide: cb,
@@ -559,7 +559,7 @@ AsyncTestCase("App.view.base.View", {
             mixins : {show: 'App.mixin.view.Enable'},
             configs: {
                 template    : 'Button',
-                data        : {title: 'Test'},
+                data        : {title: 'Test', cls: 'cl'},
                 onBeforeEnable : cb,
                 onAfterEnable  : cb,
                 onBeforeDisable: cb,

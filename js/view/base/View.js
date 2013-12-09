@@ -90,7 +90,7 @@ N13.define('App.view.base.View', {
          */
         containerCls    : 'innerContainer',
         /**
-         * {String|Boolean} Name of the template class for current view or false if current class doesn't use template
+         * {String|null} Name of the template class for current view or false if current class doesn't use template
          */
         template        : null,
         /**
@@ -202,11 +202,17 @@ N13.define('App.view.base.View', {
          * {Boolean} Means that init() method was called or not. It must be called only once.
          * @private
          */
-        this._inited    = false;
+        this._inited     = false;
         /**
          * {Boolean} Means that destroyed instance mustn't be destroyed twice or more
+         * @private
          */
-        this._destroyed = false;
+        this._destroyed  = false;
+        /**
+         * {String|null} Name of the template class. For example: 'App.template.Panel'
+         * @private
+         */
+        this._templateCl = null;
     },
 
     /**
@@ -332,18 +338,16 @@ N13.define('App.view.base.View', {
      * @returns {Boolean}
      */
     onRender: function () {
-        var Tpl      = N13.ns(this.templateNs + '.' + this.template, false) || {};
-        var dataProp = this.templateDataProp;
-        var tplData;
+        var tplData   = this.getTemplateData();
+        var tplString = this.getTemplateString();
 
         this.clear();
-        tplData = Tpl[dataProp];
-        if (tplData === '' || !N13.isString(tplData) || !N13.isObject(this[dataProp]) && this[dataProp] !== null) {
+        if (tplString === '' || !N13.isString(tplString) || !N13.isObject(tplData) && tplData !== null) {
             this.trigger('error', 'Invalid template data in view: "' + this.className + '"');
             return false;
         }
         try {
-            this.el.append(_.template(tplData, this[dataProp]));
+            this.el.append(_.template(tplString, tplData));
         } catch (e) {
             this.trigger('error', 'Template data is invalid in view "' + this.className + '". Message: "' + e.message + '"');
             return false;
@@ -352,6 +356,28 @@ N13.define('App.view.base.View', {
         this.rendered = true;
 
         return true;
+    },
+
+    /**
+     * Returns data object. Data object it's an object, which contains properties copied from
+     * configuration or set by setConfig() method. For example, for this class it may be like this:
+     * {template: 'View', elPath: '.ct', viewNs: 'App.view',...}
+     * @returns {Object}
+     */
+    getTemplateData: function () {
+        return this[this.templateDataProp];
+    },
+
+    /**
+     * Returns template string from current template. For it's render you should use _.template() method.
+     * @returns {String|null}
+     */
+    getTemplateString: function () {
+        if (!this._templateCl) {
+            this._templateCl = N13.ns(this.templateNs + '.' + this.template, false) || {};
+        }
+
+        return this._templateCl && this._templateCl[this.templateDataProp];
     },
 
     /**

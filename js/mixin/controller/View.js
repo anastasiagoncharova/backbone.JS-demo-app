@@ -59,14 +59,16 @@ N13.define('App.mixin.controller.View', {
 
         /**
          * {RegEx} String left+right trimming regular expression.
-         * @private
          */
         this._trimRe         = /^\s+|\s+$/g;
         /**
          * {RegEx} One views query node format. For example: 'view1 > view2[2] > view3#id-12'
-         * @private
          */
         this._queryNodeRe    = /^([a-zA-Z0-9.]+)((\[([0-9]+)\])|(#([a-zA-Z0-9\-]+)))?$/;
+        /**
+         * {Object} Map of the view instances for current controller. Is used in findView() method.
+         */
+        this._viewCache      = {};
 
         //
         // view parameter must be set from outside by setConfig({view: App.view.ase.View})
@@ -112,15 +114,29 @@ N13.define('App.mixin.controller.View', {
      * or 'view1 > view2 > view3' or 'view1 > view2'. First and second queries are similar
      * in case if there is only one view3 inside the view2.
      * @param {String} query
+     * @param {Boolean} skipCache true will skip cache and try to find view in views hierarchy,
+     * false or undefined will check if only this related controller's cache has this instance
+     * by current query
      * @return {Array} Array of App.view.base.View instances or empty array
      */
-    findView: function (query) {
+    findView: function (query, skipCache) {
         var queryArr;
         var me = this;
+        var view;
 
+        //
+        // view and query must be set correctly
+        //
         if (!me.view || !N13.isString(query) || query === '') {
             return null;
         }
+        //
+        // Tries to find view by query in this controller cache
+        //
+        if (!skipCache && this._viewCache[query]) {
+            return this._viewCache[query];
+        }
+
         queryArr = _.map(query.split('>'), function (q) {
             var parts = me._queryNodeRe.exec(q.replace(me._trimRe, ''));
 
@@ -140,7 +156,15 @@ N13.define('App.mixin.controller.View', {
             };
         });
 
-        return me._findView(queryArr, [me.view]);
+        view = me._findView(queryArr, [me.view]);
+        //
+        // Saves found view instance to the controller cache
+        //
+        if (view) {
+            this._viewCache[query] = view;
+        }
+
+        return view;
     },
 
 
